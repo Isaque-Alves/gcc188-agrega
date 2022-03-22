@@ -1,8 +1,6 @@
 # Agrega
 
-Atualmente, links são jogados diretamente para as pessoas. É muito mais conveniente receber grupos de links relacionados e relevantes, curados por usuários.
-A comunidade pode julgar e comentar nos links, dando feedback ao criador.Criadores não são limitados e podem criar quantos grupos de links quiserem,
-e cada um com quantos links julgar necessário.Os usuários previstos são aqueles que necessitam compartilhar uma certa quantidade de link de forma simplificada.
+O conhecimento presente na internet é extremamente vasto, vários sites trazem assuntos extremamente interessantes sobre o mesmo tópico. Entretanto, juntar esse conteúdo não é uma tarefa fácil, por exemplo, se você quiser compartilhar links sobre matérias e vídeos de ciência de dados com seus amigos, dificilmente faria isso de forma organizada. Nesse contexto, nosso sistema resolve seu problema, nele você pode criar grupos e dentro desses grupos adicionar vários links. Além disso, você pode comentar nos links, dizer sua opinião sobre o que foi abordado e discutir com a comunidade seu posicionamento.
 
 ## 🛠️ Tecnologias Utilizadas
 
