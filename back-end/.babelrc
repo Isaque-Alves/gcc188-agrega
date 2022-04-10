@@ -1,0 +1,19 @@
+{
+    "presets": [
+        ["@babel/env", {
+            "targets": {
+                "node": "current"
+            }
+        }]
+    ],
+    "plugins": [
+        ["babel-plugin-root-import", {
+            "paths": [
+                {
+                    "rootPathSuffix": "./src",
+                    "rootPathPrefix": "~/"
+                }
+            ]
+        }]
+    ]
+}
