@@ -1,37 +1,47 @@
-import { Sequelize } from 'sequelize';
+import { DataTypes } from 'sequelize';
 import db from './connection';
 
 const Usuario = db.define('Usuario', {
     nome: {
-        type: Sequelize.STRING,
+        type: DataTypes.STRING,
         allowNull: false,
     },
     email: {
-        type: Sequelize.STRING,
+        type: DataTypes.STRING,
+        allowNull: false,
+        unique: true,
+    },
+    verificado: {
+        type: DataTypes.BOOLEAN,
+        allowNull: false,
+        defaultValue: false,
+    },
+    senha: {
+        type: DataTypes.STRING,
         allowNull: false,
     }
 }, { tableName: 'Usuarios' });
 
 const GrupoLink = db.define('GrupoLink', {
     nome: {
-        type: Sequelize.STRING,
+        type: DataTypes.STRING,
         allowNull: false,
     },
 }, { tableName: 'GruposLinks' });
 
 const Link = db.define('Link', {
     nome: {
-        type: Sequelize.STRING
+        type: DataTypes.STRING,
     },
     url: {
-        type: Sequelize.STRING,
+        type: DataTypes.STRING,
         allowNull: false,
     }
 }, { tableName: 'Links' });
 
 const Comentario = db.define('Comentario', {
     texto: {
-        type: Sequelize.STRING(1000)
+        type: DataTypes.STRING(1000),
     }
 }, { tableName: 'Comentarios' });
 
