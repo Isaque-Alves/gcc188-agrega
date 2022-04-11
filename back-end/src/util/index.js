@@ -3,9 +3,10 @@ import bcrypt from 'bcrypt';
 let Util = {
     camposNecessarios(req, campos) {
         const c = { valido: true };
-        for (var campo in campos) {
-            if (req.body[campo] === undefined) c.valido = false;
-            c[campo] = req.body[campo] || req.params[campo];
+        for (var campo of campos) {
+            const v = req.body[campo] || req.params[campo];
+            if (v === undefined) c.valido = false;
+            c[campo] = v;
         }
         return c;
     },
@@ -30,12 +31,12 @@ let Util = {
     },
 
     senhaInvalida(res) {
-        Util.requisicaoInvalidaMsg(res, 'Nova senha fornecida é inválida');
+        Util.requisicaoInvalidaMsg(res, 'A nova senha fornecida é inválida');
     },
 
     campoInvalido(res, campo) {
         Util.requisicaoInvalida(res);
-        res.json(res, { tipo: 'campoInvalido', campo });
+        res.json({ tipo: 'campoInvalido', campo });
     },
 
     requisicaoInvalida(res) {
@@ -52,11 +53,6 @@ let Util = {
     },
 
     resposta(res, dados) {
-        if (Array.isArray(dados)) {
-            for (let d of dados) {
-                delete d.senha;
-            }
-        }
         res.json(dados);
     },
 
