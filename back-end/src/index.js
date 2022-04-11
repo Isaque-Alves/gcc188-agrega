@@ -8,6 +8,6 @@ app.use(express.json());
 app.use(router);
 
 (async () => {
-    await db.sync({ alter: true, logging: console.log });
+    await db.sync({ force: true, logging: console.log });
     app.listen(3000);
 })();
