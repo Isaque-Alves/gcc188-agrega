@@ -1,3 +1,4 @@
+import { UniqueConstraintError } from 'sequelize';
 import { Usuario } from '~/db';
 import { Util as u } from '~/util';
 
@@ -35,8 +36,17 @@ let UsuarioController = {
             return u.senhaInvalida(res);
         }
 
-        const us = await Usuario.create({ nome, email, senha });
-        await UsuarioController.encontrar({ body: { id: us.id }}, res);
+        try {
+            const us = await Usuario.create({ nome, email, senha });
+            await UsuarioController.encontrar({ body: { id: us.id }}, res);
+        } catch (e) {
+            if (e instanceof UniqueConstraintError) {
+                return u.requisicaoInvalidaMsg(res, 'Email já cadastrado');
+            } else {
+                console.log(e);
+                return u.requisicaoInvalidaMsg(res, 'Erro desconhecido');
+            }
+        }
     },
 
     async atualizar(req, res) {
