@@ -1,5 +1,5 @@
 import { UniqueConstraintError } from 'sequelize';
-import { Usuario } from '~/db';
+import { Usuario, GrupoLink } from '~/db';
 import { Util as u } from '~/util';
 import crypto from 'crypto';
 
@@ -11,7 +11,7 @@ const campos = {
     senha: { validar: u.validarSenha, invalido: u.senhaInvalida },
     senhaAntiga: { validar: u.validarSenha, invalido: u.senhaInvalida },
     email: { validar: u.validarEmail },
-    id: { validar: () => true },
+    id: { },
 };
 
 const necessario = u.generateNecessario(campos);
@@ -53,13 +53,13 @@ let UsuarioController = {
             const token = gerarToken();
             sessoesUsuario[token] = us;
             res.cookie('Token', token);
-            res.json({});
+            u.resposta(res, {});
         } else {
             u.erro(res, 'Credenciais incorretas');
         }
     },
 
-    async todos(_req, res) {
+    async listar(_req, res) {
         u.resposta(res, await Usuario.findAll({ attributes }));
     },
 
@@ -110,7 +110,7 @@ let UsuarioController = {
         await UsuarioController.encontrar(req, res);
     },
 
-    async deletar(req, res) {
+    async apagar(req, res) {
         let { id, valido } = necessario(req, res, 'id');
         if (!valido) return;
 

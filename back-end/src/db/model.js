@@ -23,6 +23,12 @@ const Usuario = db.define('Usuario', {
 }, { tableName: 'Usuarios' });
 
 const GrupoLink = db.define('GrupoLink', {
+    gid: {
+        type: DataTypes.INTEGER,
+        allowNull: false,
+        autoIncrement: true,
+        primaryKey: true,
+    },
     nome: {
         type: DataTypes.STRING,
         allowNull: false,
@@ -45,7 +51,7 @@ const Comentario = db.define('Comentario', {
     }
 }, { tableName: 'Comentarios' });
 
-Usuario.hasMany(GrupoLink);
+Usuario.hasMany(GrupoLink, { foreignKey: 'id' });
 GrupoLink.hasMany(Link);
 Link.hasMany(Comentario);
 Usuario.hasMany(Comentario);
