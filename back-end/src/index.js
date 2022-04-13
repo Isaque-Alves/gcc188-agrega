@@ -10,6 +10,6 @@ app.use(cookieParser());
 app.use(router);
 
 (async () => {
-    await db.sync({ force: true, logging: console.log });
+    await db.sync({ logging: console.log });
     app.listen(3000);
 })();

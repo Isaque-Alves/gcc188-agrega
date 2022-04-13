@@ -36,6 +36,12 @@ const GrupoLink = db.define('GrupoLink', {
 }, { tableName: 'GruposLinks' });
 
 const Link = db.define('Link', {
+    lid: {
+        type: DataTypes.INTEGER,
+        allowNull: false,
+        autoIncrement: true,
+        primaryKey: true,
+    },
     nome: {
         type: DataTypes.STRING,
     },
@@ -46,14 +52,21 @@ const Link = db.define('Link', {
 }, { tableName: 'Links' });
 
 const Comentario = db.define('Comentario', {
+    cid: {
+        type: DataTypes.INTEGER,
+        allowNull: false,
+        autoIncrement: true,
+        primaryKey: true,
+    },
     texto: {
         type: DataTypes.STRING(1000),
     }
 }, { tableName: 'Comentarios' });
 
 Usuario.hasMany(GrupoLink, { foreignKey: 'id' });
-GrupoLink.hasMany(Link);
-Link.hasMany(Comentario);
-Usuario.hasMany(Comentario);
+Usuario.hasMany(Link, { foreignKey: 'id' });
+Usuario.hasMany(Comentario, { foreignKey: 'id' });
+GrupoLink.hasMany(Link, { foreignKey: 'gid' });
+Link.hasMany(Comentario, { foreignKey: 'lid' });
 
 export { db, Usuario, GrupoLink, Link, Comentario };
