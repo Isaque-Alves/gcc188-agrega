@@ -1,5 +1,5 @@
 import { makeStyles } from "@material-ui/styles";
-import { Grid, Typography, TextField, Paper, Button } from "@mui/material";
+import { Grid, Typography, TextField, Paper, Button, Table } from "@mui/material";
 import logo from "../../assets/logo-colorida.png";
 
 import Footer from "../Utils/Footer";
