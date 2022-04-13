@@ -10,15 +10,15 @@ const usrRouter = express.Router();
 const admRouter = express.Router();
 
 const usrGrpRouter = express.Router({mergeParams: true});
-const grpLnkRouter = express.Router({mergeParams: true});
+const usrLnkRouter = express.Router({mergeParams: true});
 
 router.post('/login', u.requer('email', 'senha'), UC.login);
 router.post('/registrar', u.requer('nome', 'email', 'senha'), UC.registrar);
 
 router.get('/usuario/:id/grupos', u.requerParam, GC.listar);
-router.get('/usuario/:id/grupo/:gid', u.requerParam, GC.encontrar);
-router.get('/usuario/:id/grupo/:gid/links', u.requerParam, LC.listar);
-router.get('/usuario/:id/grupo/:gid/link/:lid', u.requerParam, LC.encontrar);
+router.get('/grupo/:gid', u.requerParam, GC.encontrar);
+router.get('/grupo/:gid/links', u.requerParam, LC.listar);
+router.get('/link/:lid', u.requerParam, LC.encontrar);
 
 router.use('/usuario', UC.usuario, u.requer('id'), usrRouter);
 {
@@ -42,13 +42,14 @@ router.use('/usuario', UC.usuario, u.requer('id'), usrRouter);
         usrGrpRouter.get('/links', LC.listar);
         // /usuario/grupo/:gid/link
         usrGrpRouter.post('/link', u.requer('nome', 'url'), LC.criar);
-        usrGrpRouter.use('/link/:lid', u.requerParam, LC.linkProprio, grpLnkRouter);
-        {
-            // /usuario/grupo/:gid/link/:lid
-            grpLnkRouter.get('/', LC.encontrar);
-            grpLnkRouter.put('/', u.requer('nome', 'url'), LC.atualizar);
-            grpLnkRouter.delete('/', LC.apagar);
-        }
+    }
+
+    usrRouter.use('/link/:lid', u.requerParam, LC.linkProprio, usrLnkRouter);
+    {
+        // /usuario/link/:lid
+        usrLnkRouter.get('/', LC.encontrar);
+        usrLnkRouter.put('/', u.requer('nome', 'url'), LC.atualizar);
+        usrLnkRouter.delete('/', LC.apagar);
     }
 }
 
