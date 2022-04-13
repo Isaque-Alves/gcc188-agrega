@@ -3,6 +3,8 @@ import { makeStyles } from "@material-ui/styles";
 import { Grid, Typography, TextField, Paper, Button } from "@mui/material";
 import { useFormik } from "formik";
 import * as yup from "yup";
+import Axios from "axios";
+
 import logo from "../../assets/logo-colorida.png";
 
 import Footer from "../Utils/Footer";
@@ -55,6 +57,12 @@ const Login = (props) => {
     },
     validationSchema: validationLogin,
     onSubmit: (values) => {
+      Axios.post("https://localhost:8081/login", {
+        email: values.email,
+        password: values.password,
+      }).then((resp) => {
+        console.log(resp);
+      });
       alert(JSON.stringify(values, null, 2));
     },
   });
