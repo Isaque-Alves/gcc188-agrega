@@ -27,8 +27,7 @@ router
 
 lnkRouter
     .get('/', LC.encontrar)
-    .get('/comentarios', CC.listar)
-    .use('/comentario/:cid', UC.usuario, u.requer('id'), u.requerParam, CC.comentarioProprio, cmtRouter);
+    .get('/comentarios', CC.listar);
 
 router.use('/usuario', UC.usuario, u.requer('id'), usrRouter);
 
@@ -42,7 +41,9 @@ usrRouter
     // /usuario/grupo
     .post('/grupo', u.requer('nome'), GC.criar)
     .use('/grupo/:gid', u.requerParam, GC.grupoProprio, usrGrpRouter)
+    // /usuario/link/:lid/comentario
     .use('/link/:lid/comentario', u.requerParam, cmtRouter)
+    // /usuario/link/:lid
     .use('/link/:lid', u.requerParam, LC.linkProprio, usrLnkRouter);
 
 usrGrpRouter
