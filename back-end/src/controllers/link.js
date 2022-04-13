@@ -7,8 +7,7 @@ let LinkController = {
     },
 
     async criar(req, res) {
-        const gl = await Link.create(req.r);
-        u.resposta(res, gl);
+        u.resposta(res, await Link.create(req.r));
     },
 
     async atualizar(req, res) {
