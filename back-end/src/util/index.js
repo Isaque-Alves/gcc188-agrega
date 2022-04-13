@@ -1,38 +1,6 @@
 import bcrypt from 'bcrypt';
 
 let Util = {
-    __necessario(req, res, campos, requeridos) {
-        const r = { valido: true, c: {} };
-        for (const nome of requeridos) {
-            let attr = campos[nome];
-            let c = req.body[nome] || req.params[nome];
-
-            if (req.user) {
-                c = c || req.user[nome];
-            }
-            if (req.admin) {
-                c = c || req.admin[nome];
-            }
-
-            if (c == undefined) {
-                r.valido = false;
-                Util.campoFaltando(res);
-                break;
-            }
-            if (!(attr.validar || t)(c)) {
-                r.valido = false;
-                (attr.invalido || v)(res, nome);
-                break;
-            }
-            r.c[nome] = c;
-        }
-        return r;
-    },
-
-    generateNecessario(campos) {
-        return (req, res, ...requeridos) => Util.__necessario(req, res, campos, requeridos);
-    },
-
     requer(...c) {
         async function handler(req, res, next) {
             let valido = true;
