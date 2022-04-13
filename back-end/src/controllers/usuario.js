@@ -33,6 +33,14 @@ let UsuarioController = {
         }
     },
 
+    async naoAdmin(req, res, next) {
+        if (!req.admin) {
+            next();
+        } else {
+            u.erro(res, 'Não autenticado');
+        }
+    },
+
     async login(req, res) {
         let { email, senha } = req.r;
 
