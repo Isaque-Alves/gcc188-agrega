@@ -1,99 +1,102 @@
 import { UniqueConstraintError } from 'sequelize';
-import { Usuario } from '~/db';
+import { Usuario, GrupoLink } from '~/db';
 import { Util as u } from '~/util';
+import crypto from 'crypto';
 
-const exclude = ['senha'];
+const attributes = { exclude: ['senha'] };
+
+const sessoesUsuario = {};
+const sessoesAdmin = {};
+
+function gerarToken() {
+    return crypto.randomBytes(32).toString('hex');
+}
 
 let UsuarioController = {
-    async todos(_req, res) {
-        u.resposta(res, await Usuario.findAll({ attributes: { exclude }}));
+    async admin(req, res, next) {
+        const token = req.cookies['Token'];
+        req.admin = sessoesAdmin[token];
+        if (req.admin) {
+            next();
+        } else {
+            u.erro(res, 'Não autenticado');
+        }
+    },
+
+    async usuario(req, res, next) {
+        const token = req.cookies['Token'];
+        req.user = sessoesUsuario[token];
+        if (sessoesAdmin[token] || req.user) {
+            next();
+        } else {
+            u.erro(res, 'Não autenticado');
+        }
+    },
+
+    async login(req, res) {
+        let { email, senha } = req.r;
+
+        const us = await Usuario.findOne({ where: { email }});
+        if (us) {
+            /* if (!us.verificado) {
+                u.erro(res, 'Sua conta ainda não foi verificada');
+            } else */ if (await u.compararSenha(senha, us.senha)) {
+                const token = gerarToken();
+                sessoesUsuario[token] = us;
+                res.cookie('Token', token);
+                u.resposta(res, {});
+            }
+        } else {
+            u.erro(res, 'Credenciais incorretas');
+        }
+    },
+
+    async listar(_req, res) {
+        u.resposta(res, await Usuario.findAll({ attributes }));
     },
 
     async encontrar(req, res) {
-        let { id, valido } = u.camposNecessarios(req, ['id']);
-        if (!valido) {
-            return u.campoFaltando(res);
-        }
-        u.resposta(res, await Usuario.findByPk(id, { attributes: { exclude }}));
+        u.resposta(res, await Usuario.findByPk(req.r.id, { attributes }));
     },
 
     async registrar(req, res) {
-        let { nome, email, senha, valido } = u.camposNecessarios(req, ['nome', 'email', 'senha']);
-        if (!valido) {
-            return u.campoFaltando(res);
-        }
-
-        if (!u.validarNome(nome)) {
-            return u.campoInvalido(res, 'nome');
-        }
-
-        if (!u.validarEmail(email)) {
-            return u.campoInvalido(res, 'email');
-        }
-
-        ({ senha, valido } = await u.processarSenha(senha));
-        if (!valido) {
-            return u.senhaInvalida(res);
-        }
+        req.r.senha = await u.processarSenha(req.r.senha);
 
         try {
-            const us = await Usuario.create({ nome, email, senha });
-            await UsuarioController.encontrar({ body: { id: us.id }}, res);
+            await Usuario.create(req.r);
+            u.resposta(res, {});
         } catch (e) {
             if (e instanceof UniqueConstraintError) {
-                return u.requisicaoInvalidaMsg(res, 'Email já cadastrado');
+                return u.erro(res, 'Email já cadastrado');
             } else {
                 console.log(e);
-                return u.requisicaoInvalidaMsg(res, 'Erro desconhecido');
+                return u.erro(res, 'Erro desconhecido');
             }
         }
     },
 
-    async atualizar(req, res) {
-        let { nome, email, id, valido } = u.camposNecessarios(req, ['nome', 'email', 'id']);
-        if (!valido) {
-            return u.campoFaltando(res);
-        }
-
-        if (!u.validarNome(nome)) {
-            return u.campoInvalido(res, 'nome');
-        }
-
-        if (!u.validarEmail(email)) {
-            return u.campoInvalido(res, 'email');
-        }
+    async atualizar(req, res, next) {
+        let { nome, email, id } = req.r;
 
         await Usuario.update({ nome, email }, { where: { id }});
-        await UsuarioController.encontrar(req, res);
+        next();
     },
 
-    async atualizarSenha(req, res) {
-        let { senhaAntiga, senha, id, valido } = u.camposNecessarios(req, ['senhaAntiga', 'senha', 'id']);
-        if (!valido) {
-            return u.campoFaltando(res);
-        }
-
-        ({ senha, valido } = await u.processarSenha(senha));
-        if (!valido) {
-            return u.senhaInvalida(res);
-        }
+    async atualizarSenha(req, res, next) {
+        let { id, senha, senhaAntiga } = req.r;
 
         const us = await Usuario.findByPk(id);
-        if (!compararSenha(us.senha, senhaAntiga)) {
-            return requisicaoInvalidaMsg('A senha antiga fornecida não é a correta');
+        if (!(await u.compararSenha(us.senha, senhaAntiga))) {
+            return u.erro(res, 'A senha antiga fornecida não é a correta');
         }
 
+        senha = await u.processarSenha(senha);
         await Usuario.update({ senha }, { where: { id }});
-        await UsuarioController.encontrar(req, res);
+        next();
     },
 
-    async deletar(req, res) {
-        let { id, valido } = u.camposNecessarios(req, ['id']);
-        if (!valido) {
-            return u.campoFaltando(res);
-        }
-
-        await Usuario.destroy({ where: { id }});
+    async apagar(req, res) {
+        await Usuario.destroy({ where: req.r });
         u.resposta(res, {});
     }
 }
