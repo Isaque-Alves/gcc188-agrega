@@ -28,12 +28,7 @@ router
 lnkRouter
     .get('/', LC.encontrar)
     .get('/comentarios', CC.listar)
-    .post('/comentario', UC.usuario, u.requer('texto'), CC.criar)
     .use('/comentario/:cid', UC.usuario, u.requer('id'), u.requerParam, CC.comentarioProprio, cmtRouter);
-
-cmtRouter
-    .put('/', UC.naoAdmin, u.requer('texto'), CC.atualizar)
-    .delete('/', CC.apagar);
 
 router.use('/usuario', UC.usuario, u.requer('id'), usrRouter);
 
@@ -47,6 +42,7 @@ usrRouter
     // /usuario/grupo
     .post('/grupo', u.requer('nome'), GC.criar)
     .use('/grupo/:gid', u.requerParam, GC.grupoProprio, usrGrpRouter)
+    .use('/link/:lid/comentario', u.requerParam, cmtRouter)
     .use('/link/:lid', u.requerParam, LC.linkProprio, usrLnkRouter);
 
 usrGrpRouter
@@ -64,6 +60,11 @@ usrLnkRouter
     .get('/', LC.encontrar)
     .put('/', u.requer('nome', 'url'), LC.atualizar)
     .delete('/', LC.apagar);
+
+cmtRouter
+    .put('/:cid', UC.naoAdmin, u.requerParam, CC.comentarioProprio, u.requer('texto'), CC.atualizar, CC.encontrar)
+    .delete('/:cid', u.requerParam, CC.comentarioProprio, CC.apagar)
+    .post('/', UC.naoAdmin, u.requer('texto'), CC.criar);
 
 router.use('/admin', UC.admin, admRouter);
 

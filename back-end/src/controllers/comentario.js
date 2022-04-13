@@ -3,12 +3,17 @@ import { Util as u } from '~/util';
 
 let ComentarioController = {
     async criar(req, res) {
-        u.resposta(res, Comentario.create(req.r));
+        u.resposta(res, await Comentario.create(req.r));
     },
 
-    async atualizar(req, res) {
+    async encontrar(req, res) {
+        u.resposta(res, await Comentario.findOne(req.r));
+    },
+
+    async atualizar(req, res, next) {
         let { texto, cid } = req.r;
         await Comentario.update({ texto }, { where: { cid }});
+        next();
     },
 
     async apagar(req, res) {
