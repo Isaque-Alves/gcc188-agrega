@@ -10,9 +10,10 @@ let LinkController = {
         u.resposta(res, await Link.create(req.r));
     },
 
-    async atualizar(req, res) {
+    async atualizar(req, res, next) {
         let { nome, url, id, gid, lid } = req.r;
         await Link.update({ nome, url }, { where: { id, gid, lid }});
+        next();
     },
 
     async apagar(req, res) {
