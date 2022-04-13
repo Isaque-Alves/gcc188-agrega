@@ -1,49 +1,64 @@
-import { UniqueConstraintError } from 'sequelize';
 import { GrupoLink } from '~/db';
 import { Util as u } from '~/util';
 
-let GruposController = {
-    async todos(_req, res) {
-        u.resposta(res, await GrupoLink.findAll({ attributes: { exclude }}));
-    },
+const campos = {
+    nome: { validar: u.validarNome },
+    id: { },
+    gid: { }
+};
 
+const necessario = u.generateNecessario(campos);
+
+let GrupoLinkController = {
     async encontrar(req, res) {
-        let { id } = u.camposNecessarios(req, ['id']);
-        u.resposta(res, await GrupoLink.findByPk(id, { attributes: { exclude }}));
+        let { id, gid, valido } = necessario(req, res, 'id', 'gid');
+        if (!valido) return;
+
+        u.resposta(res, await GrupoLink.findOne({ id, gid }));
     },
 
-    async registrar(req, res) {
-        let { nome } = u.camposNecessarios(req, ['nome']);
+    async criar(req, res) {
+        let { id, nome, valido } = necessario(req, res, 'id', 'nome');
+        if (!valido) return;
 
-        if (!u.validarNome(nome)) {
-            return u.campoInvalido(res, 'nome');
-        }
-
-        try {
-            const us = await GrupoLink.create({ nome });
-            await GrupoLinkController.encontrar({ body: { id: us.id }}, res);
-        } catch (e) {
-            console.log(e);
-            return u.requisicaoInvalidaMsg(res, 'Erro desconhecido');
-        }
+        const gl = await GrupoLink.create({ id, nome })
+        u.resposta(res, gl);
     },
 
     async atualizar(req, res) {
-        let { nome } = u.camposNecessarios(req, ['nome']);
+        let { id, gid, nome, valido } = necessario(req, res, 'id', 'gid', 'nome');
+        if (!valido) return;
 
-        if (!u.validarNome(nome)) {
-            return u.campoInvalido(res, 'nome');
-        }
-
-        await GrupoLink.update({ nome }, { where: { id }});
+        await GrupoLink.update({ nome }, { where: { id, gid }});
         await GrupoLinkController.encontrar(req, res);
     },
 
-    async deletar(req, res) {
-        let { id } = u.camposNecessarios(req, ['id']);
+    async apagar(req, res) {
+        let { id, gid, valido } = necessario(req, res, 'id', 'gid');
+        if (!valido) return;
 
-        await GrupoLink.destroy({ where: { id }});
+        await GrupoLink.destroy({ where: { id, gid }});
         u.resposta(res, {});
+    },
+
+    async listar(req, res) {
+        let { id, valido } = necessario(req, res, 'id');
+        if (!valido) return;
+
+        const grupos = await GrupoLink.findAll({ where: { id }});
+        u.resposta(res, grupos);
+    },
+
+    async grupoProprio(req, res, next) {
+        let { id, gid, valido } = necessario(req, res, 'id', 'gid');
+        if (!valido) return;
+
+        const grupo = await GrupoLink.findOne({ where: { id, gid }});
+        if (grupo) {
+            next();
+        } else {
+            u.erro(res, "Acesso negado");
+        }
     }
 }
 
