@@ -1,7 +1,7 @@
 import { makeStyles } from "@material-ui/styles";
 import Navbar from "../components/Utils/Navbar";
 import { Grid } from "@mui/material";
-import LoginForm from "../components/Auth/Grupos";
+import LoginForm from "../components/Auth/Login";
 
 const useStyles = makeStyles({
   navbar: {
