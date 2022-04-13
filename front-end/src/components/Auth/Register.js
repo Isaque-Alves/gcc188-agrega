@@ -89,12 +89,7 @@ export default function Login(props) {
     },
     validationSchema: validationSchema,
     onSubmit: (values) => {
-      Axios.post("https://localhost:8081/login", {
-        email: values.email,
-        password: values.password,
-      }).then((resp) => {
-        console.log(resp);
-      });
+      
       alert(JSON.stringify(values, null, 2));
     },
   });
