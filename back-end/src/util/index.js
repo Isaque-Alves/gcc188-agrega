@@ -1,25 +1,42 @@
 import bcrypt from 'bcrypt';
 
 let Util = {
-    camposNecessarios(req, campos) {
-        const c = { valido: true };
-        for (var campo of campos) {
-            const v = req.body[campo] || req.params[campo];
-            if (v === undefined) c.valido = false;
-            c[campo] = v;
+    __necessario(req, res, campos, requeridos) {
+        const r = { valido: true };
+        const t = () => true;
+        const v = Util.campoInvalido;
+        for (const nome of requeridos) {
+            let attr = campos[nome];
+            let c = req.body[nome] || req.params[nome];
+
+            if (req.user) {
+                c = c || req.user[nome];
+            }
+            if (req.admin) {
+                c = c || req.admin[nome];
+            }
+
+            if (c == undefined) {
+                r.valido = false;
+                Util.campoFaltando(res);
+                break;
+            }
+            if (!(attr.validar || t)(c)) {
+                r.valido = false;
+                (attr.invalido || v)(res, nome);
+                break;
+            }
+            r[nome] = c;
         }
-        return c;
+        return r;
+    },
+
+    generateNecessario(campos) {
+        return (req, res, ...requeridos) => Util.__necessario(req, res, campos, requeridos);
     },
 
     async processarSenha(s) {
-        const c = { valido: true };
-        if (!Util.validarSenha(s)) {
-            c.valido = false;
-            return;
-        }
-        const senha = await bcrypt.hash(s, 10);
-        c.senha = senha;
-        return c;
+        return await bcrypt.hash(s, 10);
     },
 
     async compararSenha(s, hash) {
@@ -27,11 +44,11 @@ let Util = {
     },
 
     campoFaltando(res) {
-        Util.requisicaoInvalidaMsg(res, 'Campo necessário não fornecido');
+        Util.erro(res, 'Campo necessário não fornecido');
     },
 
     senhaInvalida(res) {
-        Util.requisicaoInvalidaMsg(res, 'A nova senha fornecida é inválida');
+        Util.erro(res, 'A nova senha fornecida é inválida');
     },
 
     campoInvalido(res, campo) {
@@ -43,7 +60,7 @@ let Util = {
         res.status(400);
     },
 
-    requisicaoInvalidaMsg(res, msg) {
+    erro(res, msg) {
         Util.requisicaoInvalida(res);
         Util.msg(res, msg);
     },
