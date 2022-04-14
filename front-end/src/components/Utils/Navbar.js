@@ -45,8 +45,8 @@ export default function ResponsiveAppBar(props) {
   };
 
   return (
-    <AppBar position="static">
-      <Container maxWidth="xl" className={classes.navbar}>
+    <AppBar position="fixed" className={classes.navbar}>
+      <Container maxWidth="xl">
         <Toolbar disableGutters>
           <Grid container justifyContent="space-between">
             <Grid item>

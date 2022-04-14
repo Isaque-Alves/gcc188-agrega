@@ -9,7 +9,8 @@ import App from "./App";
 import Login from "./views/Login";
 import Register from "./views/Register";
 import Grupos from "./views/Grupos";
-import Grupos2 from "./views/Grupos2";
+import Links from "./views/Links";
+import Comentarios from "./views/Comentarios";
 
 ReactDOM.render(
   <BrowserRouter>
@@ -17,8 +18,9 @@ ReactDOM.render(
       <Route path="/" element={<App />} />
       <Route path="login" element={<Login />} />
       <Route path="registrar" element={<Register />} />
-      <Route path="grupos" element={<Grupos />} />
-      <Route path="grupos2" element={<Grupos2 />} />
+      <Route path="home" element={<Grupos />} />
+      <Route path="grupo/:id" element={<Links />} />
+      <Route path="grupo/:id/link" element={<Comentarios />} />
     </Routes>
   </BrowserRouter>,
   document.getElementById("root")

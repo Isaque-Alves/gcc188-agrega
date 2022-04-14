@@ -1,24 +1,14 @@
-import React from "react";
+import React, { useState } from "react";
+import { useNavigate } from "react-router-dom";
 import { makeStyles } from "@material-ui/styles";
 import { styled } from "@mui/material/styles";
-import {
-  Grid,
-  Avatar,
-  TextField,
-  Paper,
-  Button,
-  Typography,
-} from "@mui/material";
+import { Grid, TextField, Paper, Button, Alert, Snackbar } from "@mui/material";
 import { useFormik } from "formik";
 import * as yup from "yup";
-import Axios from "axios";
+import { register } from "../../services/api/Auth";
 
 import logo from "../../assets/logo-colorida.png";
 import Footer from "../Utils/Footer";
-
-const Input = styled("input")({
-  display: "none",
-});
 
 const useStyles = makeStyles({
   root: {
@@ -60,6 +50,14 @@ const useStyles = makeStyles({
 
 export default function Login(props) {
   const classes = useStyles(props);
+  const navigate = useNavigate();
+  const [open, setOpen] = useState(false);
+  const [message, setMessage] = useState("");
+  const [type, setType] = useState("success");
+
+  const handleClose = () => {
+    setOpen(false);
+  };
 
   const validationSchema = yup.object({
     name: yup
@@ -89,8 +87,24 @@ export default function Login(props) {
     },
     validationSchema: validationSchema,
     onSubmit: (values) => {
-      
-      alert(JSON.stringify(values, null, 2));
+      const data = {
+        nome: values.name,
+        email: values.email,
+        senha: values.password,
+      };
+      register(data)
+        .then((resp) => {
+          setMessage("Registro realizado com sucesso");
+          setType("success");
+          setOpen(true);
+          navigate("/login", { replace: true });
+        })
+        .catch((err) => {
+          console.log(err.response.data.msg);
+          setMessage(err.response.data.msg);
+          setType("error");
+          setOpen(true);
+        });
     },
   });
 
@@ -101,6 +115,17 @@ export default function Login(props) {
       alignItems="center"
       className={classes.root}
     >
+      <Snackbar
+        anchorOrigin={{ vertical: "top", horizontal: "right" }}
+        key={"top" + "right"}
+        open={open}
+        autoHideDuration={6000}
+        onClose={handleClose}
+      >
+        <Alert onClose={handleClose} variant="filled" severity={type}>
+          {message}
+        </Alert>
+      </Snackbar>
       <Grid item md="3">
         <img src={logo} />
       </Grid>
@@ -108,32 +133,6 @@ export default function Login(props) {
         <Paper variant="outlined" className={classes.paper}>
           <form onSubmit={formik.handleSubmit}>
             <Grid container direction="column" alignItems="flex-start">
-              <Grid container>
-                <Grid item>
-                  <Avatar
-                    alt="Remy Sharp"
-                    src="/static/images/avatar/1.jpg"
-                    sx={{ width: 56, height: 56 }}
-                  />
-                </Grid>
-                <Grid item className={classes.grid}>
-                  <label htmlFor="contained-button-file">
-                    <Input
-                      accept="image/*"
-                      id="contained-button-file"
-                      multiple
-                      type="file"
-                    />
-                    <Button variant="outlined" size="small" component="span">
-                      Upload Avatar
-                    </Button>
-                  </label>
-                  <Typography className={classes.text}>
-                    Dimensões recomendadas: 200x200, tamanho máximo: 5MB
-                  </Typography>
-                </Grid>
-              </Grid>
-
               <TextField
                 className={classes.field}
                 id="input-name"
