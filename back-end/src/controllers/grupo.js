@@ -7,8 +7,7 @@ let GrupoLinkController = {
     },
 
     async criar(req, res) {
-        const gl = await GrupoLink.create(req.r);
-        u.resposta(res, gl);
+        u.resposta(res, await GrupoLink.create(req.r));
     },
 
     async atualizar(req, res, next) {

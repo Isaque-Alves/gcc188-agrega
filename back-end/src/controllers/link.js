@@ -7,13 +7,13 @@ let LinkController = {
     },
 
     async criar(req, res) {
-        const gl = await Link.create(req.r);
-        u.resposta(res, gl);
+        u.resposta(res, await Link.create(req.r));
     },
 
-    async atualizar(req, res) {
+    async atualizar(req, res, next) {
         let { nome, url, id, gid, lid } = req.r;
         await Link.update({ nome, url }, { where: { id, gid, lid }});
+        next();
     },
 
     async apagar(req, res) {
