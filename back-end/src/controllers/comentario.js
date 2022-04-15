@@ -7,7 +7,7 @@ let ComentarioController = {
     },
 
     async encontrar(req, res) {
-        u.resposta(res, await Comentario.findAll(req.r));
+        u.resposta(res, await Comentario.findByPk(req.r.cid));
     },
 
     async atualizar(req, res, next) {
