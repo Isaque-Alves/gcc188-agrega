@@ -17,6 +17,7 @@ let Util = {
         let info = campos[nome];
         let campo = req.body[nome] || req.params[nome];
 
+        if (nome == "id") console.log(req.user);
         if (req.user) {
           campo = campo || req.user[nome];
         }
@@ -57,8 +58,8 @@ let Util = {
     return await bcrypt.compare(s, hash);
   },
 
-  campoFaltando(res) {
-    Util.erro(res, "Campo necessário não fornecido");
+  campoFaltando(res, nome) {
+    Util.erro(res, "Campo necessário não fornecido " + nome);
   },
 
   senhaInvalida(res) {
@@ -125,6 +126,7 @@ const campos = {
   gid: {},
   lid: {},
   cid: {},
+  texto: {},
 };
 
 export { Util };
