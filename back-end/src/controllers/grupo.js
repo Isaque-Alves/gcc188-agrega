@@ -3,7 +3,7 @@ import { Util as u } from '~/util';
 
 let GrupoLinkController = {
     async encontrar(req, res) {
-        u.resposta(res, await GrupoLink.findAll(req.r));
+        u.resposta(res, await GrupoLink.findByPk(req.r.gid));
     },
 
     async criar(req, res) {

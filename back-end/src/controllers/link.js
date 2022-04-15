@@ -3,7 +3,6 @@ import { Util as u } from '~/util';
 
 let LinkController = {
     async encontrar(req, res) {
-        console.log(req.r);
         u.resposta(res, await Link.findByPk(req.r.lid));
     },
 

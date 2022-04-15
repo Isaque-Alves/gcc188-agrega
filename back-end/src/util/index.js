@@ -17,7 +17,6 @@ let Util = {
                 let info = campos[nome];
                 let campo = req.body[nome] || req.params[nome];
 
-                if (nome == 'id') console.log(req.user);
                 if (req.user) {
                     campo = campo || req.user[nome];
                 }
