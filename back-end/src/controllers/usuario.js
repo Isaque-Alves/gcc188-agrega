@@ -14,7 +14,7 @@ function gerarToken() {
 
 let UsuarioController = {
     async admin(req, res, next) {
-        const token = req.cookies['Token'];
+        const token = req.header('Authorization');
         req.admin = sessoesAdmin[token];
         if (req.admin) {
             next();
@@ -24,7 +24,7 @@ let UsuarioController = {
     },
 
     async usuario(req, res, next) {
-        const token = req.cookies['Token'];
+        const token = req.header('Authorization');
         req.user = sessoesUsuario[token];
         if (sessoesAdmin[token] || req.user) {
             next();
