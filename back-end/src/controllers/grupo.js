@@ -3,7 +3,7 @@ import { Util as u } from '~/util';
 
 let GrupoLinkController = {
     async encontrar(req, res) {
-        u.resposta(res, await GrupoLink.findOne(req.r));
+        u.resposta(res, await GrupoLink.findAll(req.r));
     },
 
     async criar(req, res) {
@@ -27,7 +27,7 @@ let GrupoLinkController = {
     },
 
     async grupoProprio(req, res, next) {
-        const grupo = await GrupoLink.findOne({ where: req.r });
+        const grupo = await GrupoLink.findAll({ where: req.r });
         if (grupo) {
             next();
         } else {

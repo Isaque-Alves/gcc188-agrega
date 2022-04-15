@@ -3,7 +3,8 @@ import { Util as u } from '~/util';
 
 let LinkController = {
     async encontrar(req, res) {
-        u.resposta(res, await Link.findOne(req.r));
+        console.log(req.r);
+        u.resposta(res, await Link.findByPk(req.r.lid));
     },
 
     async criar(req, res) {
@@ -11,8 +12,8 @@ let LinkController = {
     },
 
     async atualizar(req, res, next) {
-        let { nome, url, id, gid, lid } = req.r;
-        await Link.update({ nome, url }, { where: { id, gid, lid }});
+        let { nome, url, id, lid } = req.r;
+        await Link.update({ nome, url }, { where: { id, lid }});
         next();
     },
 
@@ -27,7 +28,7 @@ let LinkController = {
     },
 
     async linkProprio(req, res, next) {
-        const link = await Link.findOne({ where: req.r });
+        const [link] = await Link.findAll({ where: req.r });
         if (link) {
             next();
         } else {
