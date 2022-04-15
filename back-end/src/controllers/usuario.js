@@ -43,8 +43,7 @@ let UsuarioController = {
             } else */ if (await u.compararSenha(senha, us.senha)) {
                 const token = gerarToken();
                 sessoesUsuario[token] = us;
-                res.cookie('Token', token);
-                u.resposta(res, {});
+                u.resposta(res, { token });
             }
         } else {
             u.erro(res, 'Credenciais incorretas');
