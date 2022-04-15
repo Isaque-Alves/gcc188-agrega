@@ -7,7 +7,7 @@ let ComentarioController = {
     },
 
     async encontrar(req, res) {
-        u.resposta(res, await Comentario.findOne(req.r));
+        u.resposta(res, await Comentario.findAll(req.r));
     },
 
     async atualizar(req, res, next) {
@@ -26,7 +26,7 @@ let ComentarioController = {
     },
 
     async comentarioProprio(req, res, next) {
-        const link = await Comentario.findOne({ where: req.r });
+        const link = await Comentario.findAll({ where: req.r });
         if (link) {
             next();
         } else {
