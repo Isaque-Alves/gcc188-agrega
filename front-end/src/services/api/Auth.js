@@ -8,4 +8,8 @@ const register = (dados) => {
   return Api().post("/registrar", dados);
 };
 
-export { login, register };
+const putUser = (dados) => {
+  return Api().put("/registrar", dados);
+};
+
+export { login, register, putUser };

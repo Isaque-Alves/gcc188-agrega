@@ -34,7 +34,7 @@ const menu = [
     name: "Links",
     icon: link,
     iconSelected: linkSelected,
-    link: "/grupo/:id/link",
+    link: "/grupo/:id/link/:lid",
     disabled: true,
     show: true,
   },

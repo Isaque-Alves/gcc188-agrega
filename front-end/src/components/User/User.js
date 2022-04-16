@@ -1,29 +1,19 @@
 import React, { useState } from "react";
-import { makeStyles } from "@material-ui/styles";
 import { useNavigate } from "react-router-dom";
-import {
-  Grid,
-  Typography,
-  TextField,
-  Paper,
-  Button,
-  Alert,
-  Snackbar,
-} from "@mui/material";
+import { makeStyles } from "@material-ui/styles";
+import { styled } from "@mui/material/styles";
+import { Grid, TextField, Paper, Button, Alert, Snackbar } from "@mui/material";
 import { useFormik } from "formik";
 import * as yup from "yup";
-import { login } from "../../services/api/Auth";
-import { SetCookie } from "../../utils/CookieUtil";
+import { register } from "../../services/api/Auth";
 
 import logo from "../../assets/logo-colorida.png";
-
 import Footer from "../Utils/Footer";
 
 const useStyles = makeStyles({
   root: {
     width: "100vw",
-    height: "80vh",
-    marginTop: 80,
+    minHeight: "80vh",
   },
   title: {
     fontFamily: "Inter, sans-serif",
@@ -34,6 +24,7 @@ const useStyles = makeStyles({
     color: "#1E2134",
   },
   paper: {
+    marginTop: 80,
     padding: 24,
   },
   field: {
@@ -42,9 +33,22 @@ const useStyles = makeStyles({
   button: {
     marginTop: 24,
   },
+  grid: {
+    display: "flex",
+    flexDirection: "column",
+    marginLeft: 10,
+  },
+  text: {
+    fontFamily: "Inter",
+    fontStyle: "normal",
+    fontWeight: 500,
+    fontSize: 12,
+    lineHeight: "166%",
+    color: "#506176",
+  },
 });
 
-const Login = (props) => {
+export default function Login(props) {
   const classes = useStyles(props);
   const navigate = useNavigate();
   const [open, setOpen] = useState(false);
@@ -55,7 +59,11 @@ const Login = (props) => {
     setOpen(false);
   };
 
-  const validationLogin = yup.object({
+  const validationSchema = yup.object({
+    name: yup
+      .string("Enter your name")
+      .min(3, "Its too short")
+      .required("Name is required"),
     email: yup
       .string("Enter your email")
       .email("Enter a valid email")
@@ -64,23 +72,32 @@ const Login = (props) => {
       .string("Enter your password")
       .min(6, "Password should be of minimum 6 characters length")
       .required("Password is required"),
+    confirmPassword: yup
+      .string("Enter your password")
+      .oneOf([yup.ref("password")], "Password not matched")
+      .required("Is required"),
   });
 
   const formik = useFormik({
     initialValues: {
+      name: "",
       email: "",
       password: "",
+      confirmPassword: "",
     },
-    validationSchema: validationLogin,
+    validationSchema: validationSchema,
     onSubmit: (values) => {
-      const data = { email: values.email, senha: values.password };
-      login(data)
+      const data = {
+        nome: values.name,
+        email: values.email,
+        senha: values.password,
+      };
+      register(data)
         .then((resp) => {
-          setMessage("Login realizado com sucesso");
+          setMessage("Registro realizado com sucesso");
           setType("success");
           setOpen(true);
-          SetCookie("token", resp.data.token);
-          navigate("/home", { replace: true });
+          navigate("/login", { replace: true });
         })
         .catch((err) => {
           console.log(err.response.data.msg);
@@ -109,59 +126,85 @@ const Login = (props) => {
           {message}
         </Alert>
       </Snackbar>
-      <Grid item md={3}>
-        <img src={logo} />
-      </Grid>
-      <Grid item md={7}>
+
+      <Grid item md="7">
         <Paper variant="outlined" className={classes.paper}>
-          <Grid container direction="column" alignItems="flex-start">
-            <Typography className={classes.title}>Login</Typography>
-            <form onSubmit={formik.handleSubmit}>
+          <form onSubmit={formik.handleSubmit}>
+            <Grid container direction="column" alignItems="flex-start">
               <TextField
                 className={classes.field}
-                value={formik.values.email}
+                id="input-name"
+                fullWidth
+                label="Nome completo"
+                type="text"
+                variant="outlined"
+                name="name"
+                value={formik.values.name}
                 onChange={formik.handleChange}
-                error={formik.touched.email && Boolean(formik.errors.email)}
-                helperText={formik.touched.email && formik.errors.email}
+                error={formik.touched.name && Boolean(formik.errors.name)}
+                helperText={formik.touched.name && formik.errors.name}
+              />
+              <TextField
+                className={classes.field}
                 id="filled-email-input"
-                name="email"
                 fullWidth
                 label="Email"
                 type="email"
                 variant="outlined"
+                name="email"
+                value={formik.values.email}
+                onChange={formik.handleChange}
+                error={formik.touched.email && Boolean(formik.errors.email)}
+                helperText={formik.touched.email && formik.errors.email}
               />
-
               <TextField
                 className={classes.field}
+                id="filled-password-input"
+                fullWidth
+                label="Senha"
+                type="password"
+                autoComplete="current-password"
+                variant="outlined"
+                name="password"
                 value={formik.values.password}
                 onChange={formik.handleChange}
                 error={
                   formik.touched.password && Boolean(formik.errors.password)
                 }
                 helperText={formik.touched.password && formik.errors.password}
+              />
+              <TextField
+                className={classes.field}
                 id="filled-password-input"
                 fullWidth
-                name="password"
-                label="Password"
+                label="Confirmar senha"
                 type="password"
                 autoComplete="current-password"
                 variant="outlined"
+                name="confirmPassword"
+                value={formik.values.confirmPassword}
+                onChange={formik.handleChange}
+                error={
+                  formik.touched.confirmPassword &&
+                  Boolean(formik.errors.confirmPassword)
+                }
+                helperText={
+                  formik.touched.confirmPassword &&
+                  formik.errors.confirmPassword
+                }
               />
-
               <Button
                 className={classes.button}
                 variant="contained"
                 type="submit"
               >
-                Login
+                Salvar Alterações
               </Button>
-            </form>
-          </Grid>
+            </Grid>
+          </form>
         </Paper>
         <Footer />
       </Grid>
     </Grid>
   );
-};
-
-export default Login;
+}

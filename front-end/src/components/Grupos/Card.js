@@ -2,6 +2,7 @@ import { makeStyles } from "@material-ui/styles";
 import { Grid, Button, Typography } from "@mui/material";
 import Card from "@mui/material/Card";
 import CardContent from "@mui/material/CardContent";
+import { useNavigate } from "react-router-dom";
 import icone from "../../assets/Avatar.png";
 
 const useStyles = makeStyles({
@@ -49,7 +50,21 @@ const useStyles = makeStyles({
 
 export default function CardLuis(props) {
   const classes = useStyles(props);
-  const { group } = props;
+  const { group, handleEdit, handleDelete } = props;
+  const navigate = useNavigate();
+
+  const handleClickAcessar = () => {
+    navigate(`/grupo/${group.gid}`);
+  };
+
+  const handleClickEditar = () => {
+    handleEdit(group);
+  };
+
+  const handleClickDeletar = () => {
+    handleDelete(group);
+  };
+
   return (
     <Card className={classes.cards} sx={{ display: "flex" }}>
       <Grid
@@ -78,20 +93,32 @@ export default function CardLuis(props) {
           >
             {group && group.nome}
           </Typography>
-          <Typography variant="subtitle1" component="div">
+          {/* <Typography variant="subtitle1" component="div">
             30 Links
-          </Typography>
+          </Typography> */}
         </CardContent>
       </Grid>
       <Grid Grid container direction="column" alignItems="center" item md="1">
         <CardContent>
-          <Button className={classes.button1} variant="contained" type="">
+          <Button
+            className={classes.button1}
+            variant="contained"
+            onClick={handleClickAcessar}
+          >
             Acessar
           </Button>
-          <Button className={classes.button2} variant="contained" type="">
+          <Button
+            className={classes.button2}
+            variant="contained"
+            onClick={handleClickEditar}
+          >
             Editar
           </Button>
-          <Button className={classes.button3} variant="contained" type="">
+          <Button
+            className={classes.button3}
+            variant="contained"
+            onClick={handleClickDeletar}
+          >
             Excluir
           </Button>
         </CardContent>

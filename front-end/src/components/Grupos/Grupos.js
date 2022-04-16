@@ -12,10 +12,16 @@ import {
 
 import { useFormik } from "formik";
 import * as yup from "yup";
-import { getGrupos, registerGrupo } from "../../services/api/Grupos";
+import {
+  getGrupos,
+  registerGrupo,
+  deleteGrupo,
+  putGrupo,
+} from "../../services/api/Grupos";
 
 import Footer from "../Utils/Footer";
 import Card from "./Card";
+import Modal from "../Utils/ModalAction";
 
 const useStyles = makeStyles({
   root: {
@@ -61,6 +67,8 @@ const useStyles = makeStyles({
 export default function Grupos(props) {
   const classes = useStyles(props);
   const [open, setOpen] = useState(false);
+  const [openModal, setOpenModal] = useState(false);
+  const [group, setGroup] = useState();
   const [message, setMessage] = useState("");
   const [type, setType] = useState("success");
   const [groups, setGroups] = useState([]);
@@ -79,7 +87,7 @@ export default function Grupos(props) {
   }, []);
 
   const validationSchema = yup.object({
-    name: yup
+    nome: yup
       .string("Enter your group name")
       .min(3, "Name should be of minimum 3 characters length")
       .required("Name is required"),
@@ -87,7 +95,7 @@ export default function Grupos(props) {
 
   const formik = useFormik({
     initialValues: {
-      name: "",
+      nome: "",
     },
     validationSchema: validationSchema,
     onSubmit: (values) => {
@@ -96,6 +104,12 @@ export default function Grupos(props) {
           setMessage("Grupo cadastrado com sucesso");
           setType("success");
           setOpen(true);
+          formik.resetForm();
+          getGrupos()
+            .then((resp) => {
+              setGroups(resp.data);
+            })
+            .catch((err) => console.log(err));
         })
         .catch((err) => {
           console.log(err.response.data.msg);
@@ -105,6 +119,53 @@ export default function Grupos(props) {
         });
     },
   });
+
+  const handleEdit = (group) => {
+    setGroup(group);
+    setOpenModal(true);
+  };
+
+  const handleDelete = (group) => {
+    setGroup(group);
+    deleteGrupo(group.gid)
+      .then((resp) => {
+        setMessage("Grupo excluido com sucesso");
+        setType("success");
+        setOpen(true);
+        getGrupos()
+          .then((resp) => {
+            setGroups(resp.data);
+          })
+          .catch((err) => console.log(err));
+      })
+      .catch((err) => {
+        console.log(err);
+        setMessage(err.response.data.msg);
+        setType("error");
+        setOpen(true);
+      });
+  };
+
+  const handleSubmitEdit = (value) => {
+    console.log(value);
+    putGrupo(group.gid, value)
+      .then((resp) => {
+        setMessage("Grupo editado com sucesso");
+        setType("success");
+        setOpen(true);
+        getGrupos()
+          .then((resp) => {
+            setGroups(resp.data);
+          })
+          .catch((err) => console.log(err));
+      })
+      .catch((err) => {
+        console.log(err);
+        setMessage(err.response.data.msg);
+        setType("error");
+        setOpen(true);
+      });
+  };
 
   return (
     <Grid
@@ -124,6 +185,15 @@ export default function Grupos(props) {
           {message}
         </Alert>
       </Snackbar>
+      <Modal
+        isOpen={openModal}
+        title="teste"
+        value={group && group.nome}
+        buttonTitle="testeButton"
+        handleCloseModalProps={() => setOpenModal(false)}
+        handleSubmitProps={handleSubmitEdit}
+      />
+
       <Grid item md="10">
         <Grid container direction="column" alignItems="flex-start">
           <Typography className={classes.title}>Bem vindo!</Typography>
@@ -133,12 +203,12 @@ export default function Grupos(props) {
             <Grid container alignItems="flex-start">
               <TextField
                 className={classes.field}
-                value={formik.values.name}
+                value={formik.values.nome}
                 onChange={formik.handleChange}
-                error={formik.touched.name && Boolean(formik.errors.name)}
-                helperText={formik.touched.name && formik.errors.name}
+                error={formik.touched.nome && Boolean(formik.errors.nome)}
+                helperText={formik.touched.nome && formik.errors.nome}
                 id="filled-email-input"
-                name="name"
+                name="nome"
                 fullWidth
                 label="Novo Grupo"
                 type="text"
@@ -157,7 +227,11 @@ export default function Grupos(props) {
         <Paper variant="outlined" className={classes.paper}>
           <Grid container direction="column" alignItems="flex-start">
             {groups.map((group) => (
-              <Card group={group} />
+              <Card
+                group={group}
+                handleEdit={handleEdit}
+                handleDelete={handleDelete}
+              />
             ))}
           </Grid>
         </Paper>

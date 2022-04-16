@@ -17,11 +17,18 @@ import TableContainer from "@mui/material/TableContainer";
 import TableHead from "@mui/material/TableHead";
 import TablePagination from "@mui/material/TablePagination";
 import TableRow from "@mui/material/TableRow";
+import Modal from "../Utils/ModalLinkAction";
 
 import { useFormik } from "formik";
 import * as yup from "yup";
-import { getLinks, registerLink } from "../../services/api/Links";
-import { useParams } from "react-router-dom";
+import { getGrupo } from "../../services/api/Grupos";
+import {
+  getLinks,
+  registerLink,
+  putLink,
+  deleteLink,
+} from "../../services/api/Links";
+import { useNavigate, useParams } from "react-router-dom";
 
 const columns = [
   { id: "name", label: "Name", minWidth: 170 },
@@ -91,7 +98,7 @@ const useStyles = makeStyles({
     lineHeight: "166%",
     color: "#506176",
     width: "80%",
-    height: "3.5vw",
+    marginBottom: 8,
   },
   button1: {
     marginTop: 5,
@@ -125,51 +132,117 @@ export default function Grupos(props) {
   const classes = useStyles(props);
   const { id } = useParams();
   const [open, setOpen] = useState(false);
+  const [openModal, setOpenModal] = useState(false);
+  const [link, setLink] = useState();
   const [message, setMessage] = useState("");
   const [type, setType] = useState("success");
-
-  const handleClose = () => {
-    setOpen(false);
-  };
+  const [rows, setRows] = useState([]);
+  const [nomeGroup, setNomeGroup] = useState("");
+  const navigate = useNavigate();
 
   useEffect(() => {
     getLinks(id)
-      .then((resp) => console.log(resp))
+      .then((resp) => {
+        setRows(formatData(resp.data));
+        console.log(resp.data);
+      })
+      .catch((err) => console.log(err));
+
+    getGrupo(id)
+      .then((resp) => {
+        setNomeGroup(resp.data.nome);
+        console.log(resp.data);
+      })
       .catch((err) => console.log(err));
   }, []);
 
+  const isValidUrl = (url) => {
+    try {
+      new URL(url);
+    } catch (e) {
+      return false;
+    }
+    return true;
+  };
+
+  const actions = (row) => {
+    return (
+      <Grid>
+        <Button
+          className={classes.button1}
+          variant="contained"
+          onClick={(e) => {
+            e.stopPropagation();
+            handleClickAcessar(row.lid);
+          }}
+        >
+          Acessar
+        </Button>
+        <Button
+          className={classes.button2}
+          variant="contained"
+          onClick={(e) => {
+            e.stopPropagation();
+            handleEdit(row);
+          }}
+        >
+          Editar
+        </Button>
+        <Button
+          className={classes.button3}
+          variant="contained"
+          onClick={(e) => {
+            e.stopPropagation();
+            handleDelete(row);
+          }}
+        >
+          Excluir
+        </Button>
+      </Grid>
+    );
+  };
+
+  const formatData = (rows) => {
+    const data = rows.map((row) => {
+      return {
+        name: row.nome,
+        data: new Date(row.updatedAt).toLocaleDateString(),
+        gid: row.gid,
+        lid: row.lid,
+        id: row.id,
+        url: row.url,
+        acoes: actions(row),
+      };
+    });
+    return data;
+  };
+
   const validationSchema = yup.object({
-    link: yup
-      .string("Enter your link")
-      .required("Link is required")
-      .matches(/[\w+{3,25}](\w+)/g, "Formato inválido"),
+    nome: yup.string("Enter your name link").required("Name is required"),
+    url: yup
+      .string()
+      .test("is-url-valid", "URL is not valid", (value) => isValidUrl(value)),
   });
 
   const formik = useFormik({
     initialValues: {
-      link: "",
+      url: "",
+      nome: "",
     },
     validationSchema: validationSchema,
     onSubmit: (values) => {
-      const name = values.link.substring(
-        values.link.indexOf("[") + 1,
-        values.link.lastIndexOf("]")
-      );
-      const url = values.link.substring(
-        values.link.indexOf("(") + 1,
-        values.link.lastIndexOf(")")
-      );
-
-      const data = {
-        name,
-        url,
-      };
-      console.log(data);
-      registerLink(id, data)
+      registerLink(id, values)
         .then((resp) => {
           setMessage("link cadastrado com sucesso");
           setType("success");
           setOpen(true);
+          formik.resetForm();
+          getLinks(id)
+            .then((resp) => {
+              setRows(formatData(resp.data));
+              console.log(resp.data);
+            })
+            .catch((err) => console.log(err));
         })
         .catch((err) => {
           console.log(err.response.data.msg);
@@ -180,60 +253,6 @@ export default function Grupos(props) {
     },
   });
 
-  const rows = [
-    {
-      name: "Link X",
-      data: "21 Jun 2021 - 17H",
-      acoes: (
-        <Grid>
-          <Button className={classes.button1} variant="contained" type="">
-            Acessar
-          </Button>
-          <Button className={classes.button2} variant="contained" type="">
-            Editar
-          </Button>
-          <Button className={classes.button3} variant="contained" type="">
-            Excluir
-          </Button>
-        </Grid>
-      ),
-    },
-    {
-      name: "Link X",
-      data: "21 Jun 2021 - 17H",
-      acoes: (
-        <Grid>
-          <Button className={classes.button1} variant="contained" type="">
-            Acessar
-          </Button>
-          <Button className={classes.button2} variant="contained" type="">
-            Editar
-          </Button>
-          <Button className={classes.button3} variant="contained" type="">
-            Excluir
-          </Button>
-        </Grid>
-      ),
-    },
-    {
-      name: "Link X",
-      data: "21 Jun 2021 - 17H",
-      acoes: (
-        <Grid>
-          <Button className={classes.button1} variant="contained" type="">
-            Acessar
-          </Button>
-          <Button className={classes.button2} variant="contained" type="">
-            Editar
-          </Button>
-          <Button className={classes.button3} variant="contained" type="">
-            Excluir
-          </Button>
-        </Grid>
-      ),
-    },
-  ];
-
   const handleChangePage = (event, newPage) => {
     setPage(newPage);
   };
@@ -242,6 +261,65 @@ export default function Grupos(props) {
     setRowsPerPage(+event.target.value);
     setPage(0);
   };
+
+  const handleClickAcessar = (lid) => {
+    console.log(lid);
+    navigate(`/grupo/${id}/link/${lid}`);
+  };
+
+  const handleClose = () => {
+    setOpen(false);
+  };
+
+  const handleEdit = (link) => {
+    setLink(link);
+    setOpenModal(true);
+  };
+
+  const handleDelete = (link) => {
+    setLink(link);
+    deleteLink(link.lid)
+      .then((resp) => {
+        setMessage("Link excluido com sucesso");
+        setType("success");
+        setOpen(true);
+        getLinks(id)
+          .then((resp) => {
+            setRows(formatData(resp.data));
+            console.log(resp.data);
+          })
+          .catch((err) => console.log(err));
+      })
+      .catch((err) => {
+        console.log(err);
+        setMessage(err.response.data.msg);
+        setType("error");
+        setOpen(true);
+      });
+  };
+
+  const handleSubmitEdit = (value) => {
+    console.log(value);
+    putLink(link.lid, value)
+      .then((resp) => {
+        setMessage("Link editado com sucesso");
+        setType("success");
+        setOpen(true);
+        getLinks(id)
+          .then((resp) => {
+            setRows(formatData(resp.data));
+            console.log(resp.data);
+          })
+          .catch((err) => console.log(err));
+      })
+      .catch((err) => {
+        console.log(err);
+        setMessage(err.response.data.msg);
+        setType("error");
+        setOpen(true);
+      });
+  };
+
   return (
     <Grid
       container
@@ -260,9 +338,18 @@ export default function Grupos(props) {
           {message}
         </Alert>
       </Snackbar>
+      <Modal
+        isOpen={openModal}
+        title="teste"
+        valueNome={link && link.nome}
+        valueUrl={link && link.url}
+        buttonTitle="testeButton"
+        handleCloseModalProps={() => setOpenModal(false)}
+        handleSubmitProps={handleSubmitEdit}
+      />
       <Grid item md="10">
         <Grid container direction="column" alignItems="flex-start">
-          <Typography className={classes.title}>Nome do grupo</Typography>
+          <Typography className={classes.title}>{nomeGroup}</Typography>
           <Typography className={classes.subtitle}>
             Acompanhe todos os links
           </Typography>
@@ -272,14 +359,27 @@ export default function Grupos(props) {
             <Grid container alignItems="flex-start">
               <TextField
                 className={classes.field}
-                value={formik.values.link}
+                value={formik.values.nome}
                 onChange={formik.handleChange}
-                error={formik.touched.link && Boolean(formik.errors.link)}
-                helperText={formik.touched.link && formik.errors.link}
+                error={formik.touched.nome && Boolean(formik.errors.nome)}
+                helperText={formik.touched.nome && formik.errors.nome}
                 id="filled-email-input"
-                name="link"
+                name="nome"
                 fullWidth
-                label="Novo Link - Formato: [Nome do Link](URL do Link)"
+                label="Nome do Link"
+                type="text"
+                variant="outlined"
+              />
+              <TextField
+                className={classes.field}
+                value={formik.values.url}
+                onChange={formik.handleChange}
+                error={formik.touched.url && Boolean(formik.errors.url)}
+                helperText={formik.touched.url && formik.errors.url}
+                id="filled-email-input"
+                name="url"
+                fullWidth
+                label="URL do Link"
                 type="text"
                 variant="outlined"
               />
@@ -320,15 +420,19 @@ export default function Grupos(props) {
                           hover
                           role="checkbox"
                           tabIndex={-1}
-                          key={row.code}
+                          key={row.lid}
                         >
                           {columns.map((column) => {
                             const value = row[column.id];
+                            console.log(row);
                             return (
                               <TableCell
                                 className={classes.tabelaItens}
                                 key={column.id}
                                 align={column.align}
+                                onClick={() => {
+                                  window.open(row.url, "_blank");
+                                }}
                               >
                                 {column.format && typeof value === "number"
                                   ? column.format(value)
