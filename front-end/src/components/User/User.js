@@ -1,13 +1,11 @@
-import React, { useState } from "react";
-import { useNavigate } from "react-router-dom";
+import React, { useEffect, useState } from "react";
 import { makeStyles } from "@material-ui/styles";
 import { styled } from "@mui/material/styles";
 import { Grid, TextField, Paper, Button, Alert, Snackbar } from "@mui/material";
 import { useFormik } from "formik";
 import * as yup from "yup";
-import { register } from "../../services/api/Auth";
+import { putUser, getUser, putUserSenha } from "../../services/api/Auth";
 
-import logo from "../../assets/logo-colorida.png";
 import Footer from "../Utils/Footer";
 
 const useStyles = makeStyles({
@@ -50,10 +48,10 @@ const useStyles = makeStyles({
 
 export default function Login(props) {
   const classes = useStyles(props);
-  const navigate = useNavigate();
   const [open, setOpen] = useState(false);
   const [message, setMessage] = useState("");
   const [type, setType] = useState("success");
+  const [data, setData] = useState({ name: "", email: "" });
 
   const handleClose = () => {
     setOpen(false);
@@ -68,36 +66,57 @@ export default function Login(props) {
       .string("Enter your email")
       .email("Enter a valid email")
       .required("Email is required"),
-    password: yup
-      .string("Enter your password")
+    oldPassword: yup
+      .string("Enter your old password")
       .min(6, "Password should be of minimum 6 characters length")
-      .required("Password is required"),
-    confirmPassword: yup
-      .string("Enter your password")
-      .oneOf([yup.ref("password")], "Password not matched")
-      .required("Is required"),
+      .required("Old Password is required"),
+    newPassword: yup
+      .string("Enter your new password")
+      .min(6, "Password should be of minimum 6 characters length")
+      .required("New Password is required"),
   });
+
+  useEffect(() => {
+    getUser()
+      .then((resp) => {
+        setData({ name: resp.data.nome, email: resp.data.email });
+
+        console.log(resp.data);
+      })
+      .catch((err) => console.log(err));
+  }, []);
 
   const formik = useFormik({
     initialValues: {
-      name: "",
-      email: "",
-      password: "",
-      confirmPassword: "",
+      name: data.name,
+      email: data.email,
+      oldPassword: "",
+      newPassword: "",
     },
+    enableReinitialize: true,
     validationSchema: validationSchema,
     onSubmit: (values) => {
       const data = {
         nome: values.name,
         email: values.email,
-        senha: values.password,
       };
-      register(data)
+      putUser(data)
         .then((resp) => {
-          setMessage("Registro realizado com sucesso");
-          setType("success");
-          setOpen(true);
-          navigate("/login", { replace: true });
+          const data2 = {
+            senha: values.newPassword,
+            senhaAntiga: values.oldPassword,
+          };
+          putUserSenha(data2)
+            .then(() => {
+              setMessage("Registro realizado com sucesso");
+              setType("success");
+              setOpen(true);
+            })
+            .catch((err) => {
+              setMessage(err.response.data.msg);
+              setType("error");
+              setOpen(true);
+            });
         })
         .catch((err) => {
           console.log(err.response.data.msg);
@@ -161,36 +180,38 @@ export default function Login(props) {
                 className={classes.field}
                 id="filled-password-input"
                 fullWidth
-                label="Senha"
+                label="Senha Antiga"
                 type="password"
                 autoComplete="current-password"
                 variant="outlined"
-                name="password"
-                value={formik.values.password}
+                name="oldPassword"
+                value={formik.values.oldPassword}
                 onChange={formik.handleChange}
                 error={
-                  formik.touched.password && Boolean(formik.errors.password)
+                  formik.touched.oldPassword &&
+                  Boolean(formik.errors.oldPassword)
                 }
-                helperText={formik.touched.password && formik.errors.password}
+                helperText={
+                  formik.touched.oldPassword && formik.errors.oldPassword
+                }
               />
               <TextField
                 className={classes.field}
                 id="filled-password-input"
                 fullWidth
-                label="Confirmar senha"
+                label="Nova senha"
                 type="password"
                 autoComplete="current-password"
                 variant="outlined"
-                name="confirmPassword"
-                value={formik.values.confirmPassword}
+                name="newPassword"
+                value={formik.values.newPassword}
                 onChange={formik.handleChange}
                 error={
-                  formik.touched.confirmPassword &&
-                  Boolean(formik.errors.confirmPassword)
+                  formik.touched.newPassword &&
+                  Boolean(formik.errors.newPassword)
                 }
                 helperText={
-                  formik.touched.confirmPassword &&
-                  formik.errors.confirmPassword
+                  formik.touched.newPassword && formik.errors.newPassword
                 }
               />
               <Button
