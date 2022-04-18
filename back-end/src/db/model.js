@@ -1,72 +1,89 @@
-import { DataTypes } from 'sequelize';
-import db from './connection';
+import { DataTypes } from "sequelize";
+import db from "./connection";
 
-const Usuario = db.define('Usuario', {
+const Usuario = db.define(
+  "Usuario",
+  {
     nome: {
-        type: DataTypes.STRING,
-        allowNull: false,
+      type: DataTypes.STRING,
+      allowNull: false,
     },
     email: {
-        type: DataTypes.STRING,
-        allowNull: false,
-        unique: true,
+      type: DataTypes.STRING,
+      allowNull: false,
+      unique: true,
     },
     verificado: {
-        type: DataTypes.BOOLEAN,
-        allowNull: false,
-        defaultValue: false,
+      type: DataTypes.BOOLEAN,
+      allowNull: false,
+      defaultValue: false,
     },
     senha: {
-        type: DataTypes.STRING,
-        allowNull: false,
-    }
-}, { tableName: 'Usuarios' });
+      type: DataTypes.STRING,
+      allowNull: false,
+    },
+  },
+  { tableName: "Usuarios" }
+);
 
-const GrupoLink = db.define('GrupoLink', {
+const GrupoLink = db.define(
+  "GrupoLink",
+  {
     gid: {
-        type: DataTypes.INTEGER,
-        allowNull: false,
-        autoIncrement: true,
-        primaryKey: true,
+      type: DataTypes.INTEGER,
+      allowNull: false,
+      autoIncrement: true,
+      primaryKey: true,
     },
     nome: {
-        type: DataTypes.STRING,
-        allowNull: false,
+      type: DataTypes.STRING,
+      allowNull: false,
     },
-}, { tableName: 'GruposLinks' });
+  },
+  { tableName: "GruposLinks" }
+);
 
-const Link = db.define('Link', {
+const Link = db.define(
+  "Link",
+  {
     lid: {
-        type: DataTypes.INTEGER,
-        allowNull: false,
-        autoIncrement: true,
-        primaryKey: true,
+      type: DataTypes.INTEGER,
+      allowNull: false,
+      autoIncrement: true,
+      primaryKey: true,
     },
     nome: {
-        type: DataTypes.STRING,
+      type: DataTypes.STRING,
     },
     url: {
-        type: DataTypes.STRING,
-        allowNull: false,
-    }
-}, { tableName: 'Links' });
+      type: DataTypes.STRING,
+      allowNull: false,
+    },
+  },
+  { tableName: "Links" }
+);
 
-const Comentario = db.define('Comentario', {
+const Comentario = db.define(
+  "Comentario",
+  {
     cid: {
-        type: DataTypes.INTEGER,
-        allowNull: false,
-        autoIncrement: true,
-        primaryKey: true,
+      type: DataTypes.INTEGER,
+      allowNull: false,
+      autoIncrement: true,
+      primaryKey: true,
     },
     texto: {
-        type: DataTypes.STRING(1000),
-    }
-}, { tableName: 'Comentarios' });
+      type: DataTypes.STRING(1000),
+    },
+  },
+  { tableName: "Comentarios" }
+);
 
-Usuario.hasMany(GrupoLink, { foreignKey: 'id' });
-Usuario.hasMany(Link, { foreignKey: 'id' });
-Usuario.hasMany(Comentario, { foreignKey: 'id' });
-GrupoLink.hasMany(Link, { foreignKey: 'gid' });
-Link.hasMany(Comentario, { foreignKey: 'lid' });
+Usuario.hasMany(GrupoLink, { foreignKey: "id" });
+Usuario.hasMany(Link, { foreignKey: "id" });
+Usuario.hasMany(Comentario, { foreignKey: "id" });
+Comentario.belongsTo(Usuario, { foreignKey: "id" });
+GrupoLink.hasMany(Link, { foreignKey: "gid" });
+Link.hasMany(Comentario, { foreignKey: "lid" });
 
 export { db, Usuario, GrupoLink, Link, Comentario };

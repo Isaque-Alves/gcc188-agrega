@@ -45,7 +45,7 @@ export default function CardComentario(props) {
           <Avatar alt="User" />
         </Grid>
         <Grid item md={11}>
-          <Typography>usuário</Typography>
+          <Typography>{comentario.Usuario.nome}</Typography>
           <Grid container>
             <Typography className={classes.comentarioText}>
               {comentario.texto}
@@ -59,9 +59,9 @@ export default function CardComentario(props) {
         justifyContent="flex-end"
         className={classes.buttons}
       >
-        {/* <Button variant="contained" className={classes.buttonEdit}>
+        <Button variant="contained" className={classes.buttonEdit}>
           Editar
-        </Button> */}
+        </Button>
         <Button
           variant="contained"
           className={classes.buttonExcluir}
