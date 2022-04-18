@@ -1,5 +1,5 @@
 import { UniqueConstraintError } from 'sequelize';
-import { Usuario, GrupoLink } from '~/db';
+import { Usuario } from '~/db';
 import { Util as u } from '~/util';
 import crypto from 'crypto';
 
@@ -72,6 +72,7 @@ let UsuarioController = {
 
     async registrar(req, res) {
         req.r.senha = await u.processarSenha(req.r.senha);
+        req.r.admin = req.body.admin !== undefined;
 
         try {
             await Usuario.create(req.r);
@@ -96,9 +97,11 @@ let UsuarioController = {
     async atualizarSenha(req, res, next) {
         let { id, senha, senhaAntiga } = req.r;
 
-        const us = await Usuario.findByPk(id);
-        if (!(await u.compararSenha(us.senha, senhaAntiga))) {
-            return u.erro(res, 'A senha antiga fornecida não é a correta');
+        if (!req.admin) {
+            const us = await Usuario.findByPk(id);
+            if (!(await u.compararSenha(us.senha, senhaAntiga))) {
+                return u.erro(res, 'A senha antiga fornecida não é a correta');
+            }
         }
 
         senha = await u.processarSenha(senha);
