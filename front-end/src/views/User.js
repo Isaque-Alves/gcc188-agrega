@@ -1,7 +1,7 @@
 import { makeStyles } from "@material-ui/styles";
 import Navbar from "../components/Utils/Navbar";
 import { Grid } from "@mui/material";
-import TelaGrupos from "../components/Grupos/Grupos";
+import User from "../components/User/User";
 import Sidebar from "../components/Utils/Sidebar/Sidebar";
 
 const useStyles = makeStyles({
@@ -15,7 +15,7 @@ export default function Grupos() {
     <Grid container>
       <Navbar />
       <Sidebar />
-      <TelaGrupos />
+      <User />
     </Grid>
   );
 }

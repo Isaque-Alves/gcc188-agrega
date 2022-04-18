@@ -1,7 +1,8 @@
 import { makeStyles } from "@material-ui/styles";
 import Navbar from "../components/Utils/Navbar";
 import { Grid } from "@mui/material";
-import TelaGrupos2 from "../components/Auth/Grupos2";
+import Comentarios from "../components/Comentarios/Comentarios";
+import Sidebar from "../components/Utils/Sidebar/Sidebar";
 
 const useStyles = makeStyles({
   navbar: {
@@ -9,11 +10,12 @@ const useStyles = makeStyles({
   },
 });
 
-export default function Grupos() {
+export default function ComentariosView() {
   return (
     <Grid container>
       <Navbar />
-      <TelaGrupos2 />
+      <Sidebar />
+      <Comentarios />
     </Grid>
   );
 }
