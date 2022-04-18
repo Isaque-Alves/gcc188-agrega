@@ -181,7 +181,7 @@ describe('Testes', function() {
         expect(res.body).to.have.lengthOf(2);
     })
 
-    it('edita comentário do usuário', async function() {
+    it('edita comentário', async function() {
         const res = await request(app)
             .put(`/usuario/link/${lid}/comentario/${cid}`)
             .set('Authorization', token)
@@ -197,5 +197,13 @@ describe('Testes', function() {
             .set('Authorization', token2)
             .send({ texto: 'lorem ipsum?' })
         expect(res.status).to.equal(400);
+    })
+
+    it('apaga comentário', async function() {
+        const res = await request(app)
+            .delete(`/usuario/link/${lid}/comentario/${cid}`)
+            .set('Authorization', token)
+            .send()
+        expect(res.status).to.equal(200);
     })
 })
