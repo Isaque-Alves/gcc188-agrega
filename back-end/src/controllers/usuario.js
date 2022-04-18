@@ -25,8 +25,8 @@ let UsuarioController = {
 
     async usuario(req, res, next) {
         const token = req.header('Authorization');
-        req.user = sessoesUsuario[token];
-        if (sessoesAdmin[token] || req.user) {
+        req.user = sessoesUsuario[token] || sessoesAdmin[token];
+        if (req.user) {
             next();
         } else {
             u.erro(res, 'Não autenticado');
