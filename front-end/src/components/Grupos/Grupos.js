@@ -143,25 +143,28 @@ export default function Grupos(props) {
   const handleDelete = (group) => {
     setGroup(group);
     console.log(id);
-    id
-      ? deleteGrupoAdmin(group.gid)
-      : deleteGrupo(group.gid)
+    const request = id
+      ? deleteGrupoAdmin(id, group.gid)
+      : deleteGrupo(group.gid);
+
+    request
+      .then((resp) => {
+        setMessage("Grupo excluido com sucesso");
+        setType("success");
+        setOpen(true);
+        const request2 = id ? getGruposAdmin(id) : getGrupos();
+        request2
           .then((resp) => {
-            setMessage("Grupo excluido com sucesso");
-            setType("success");
-            setOpen(true);
-            getGrupos()
-              .then((resp) => {
-                setGroups(resp.data);
-              })
-              .catch((err) => console.log(err));
+            setGroups(resp.data);
           })
-          .catch((err) => {
-            console.log(err);
-            setMessage(err.response.data.msg);
-            setType("error");
-            setOpen(true);
-          });
+          .catch((err) => console.log(err));
+      })
+      .catch((err) => {
+        console.log(err);
+        setMessage(err.response.data.msg);
+        setType("error");
+        setOpen(true);
+      });
   };
 
   const handleSubmitEdit = (value) => {

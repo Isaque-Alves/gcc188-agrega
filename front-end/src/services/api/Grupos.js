@@ -28,8 +28,8 @@ const deleteGrupo = (id) => {
   return Api().delete(`/usuario/grupo/${id}`);
 };
 
-const deleteGrupoAdmin = (id) => {
-  return Api().delete(`/admin/usuario/grupo/${id}`);
+const deleteGrupoAdmin = (id, gid) => {
+  return Api().delete(`/admin/usuario/${id}/grupo/${gid}`);
 };
 
 export {
