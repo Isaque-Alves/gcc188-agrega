@@ -16,6 +16,10 @@ const registerGrupo = (dados) => {
   return Api().post("/usuario/grupo", dados);
 };
 
+const registerGrupoAdmin = (id, dados) => {
+  return Api().post(`/admin/usuario/${id}/grupo`, dados);
+};
+
 const putGrupo = (id, dados) => {
   return Api().put(`/usuario/grupo/${id}`, dados);
 };
@@ -41,4 +45,5 @@ export {
   getGruposAdmin,
   deleteGrupoAdmin,
   putGrupoAdmin,
+  registerGrupoAdmin,
 };
