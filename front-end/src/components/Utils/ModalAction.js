@@ -40,7 +40,7 @@ const useStyles = makeStyles(() => ({
 export default function Modal(props) {
   const classes = useStyles();
   const {
-    children,
+    label = "Texto",
     value,
     isOpen,
     title,
@@ -104,7 +104,7 @@ export default function Modal(props) {
                 helperText={formik.touched.nome && formik.errors.nome}
                 name="nome"
                 fullWidth
-                label="Novo Grupo"
+                label={label}
                 type="text"
                 variant="outlined"
               />

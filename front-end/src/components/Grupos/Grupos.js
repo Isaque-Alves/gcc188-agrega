@@ -17,11 +17,16 @@ import {
   registerGrupo,
   deleteGrupo,
   putGrupo,
+  getGruposAdmin,
+  deleteGrupoAdmin,
+  putGrupoAdmin,
+  registerGrupoAdmin,
 } from "../../services/api/Grupos";
 
 import Footer from "../Utils/Footer";
 import Card from "./Card";
 import Modal from "../Utils/ModalAction";
+import { useParams } from "react-router-dom";
 
 const useStyles = makeStyles({
   root: {
@@ -76,14 +81,25 @@ export default function Grupos(props) {
   const handleClose = () => {
     setOpen(false);
   };
+  const { id } = useParams();
 
   useEffect(() => {
-    getGrupos()
-      .then((resp) => {
-        console.log(resp);
-        setGroups(resp.data);
-      })
-      .catch((err) => console.log(err));
+    console.log(id);
+    if (id) {
+      getGruposAdmin(id)
+        .then((resp) => {
+          console.log(resp);
+          setGroups(resp.data);
+        })
+        .catch((err) => console.log(err));
+    } else {
+      getGrupos()
+        .then((resp) => {
+          console.log(resp);
+          setGroups(resp.data);
+        })
+        .catch((err) => console.log(err));
+    }
   }, []);
 
   const validationSchema = yup.object({
@@ -99,13 +115,19 @@ export default function Grupos(props) {
     },
     validationSchema: validationSchema,
     onSubmit: (values) => {
-      registerGrupo(values)
+      const request = id
+        ? registerGrupoAdmin(id, values)
+        : registerGrupo(values);
+
+      request
         .then((resp) => {
           setMessage("Grupo cadastrado com sucesso");
           setType("success");
           setOpen(true);
           formik.resetForm();
-          getGrupos()
+          const request2 = id ? getGruposAdmin(id) : getGrupos();
+
+          request2
             .then((resp) => {
               setGroups(resp.data);
             })
@@ -127,12 +149,18 @@ export default function Grupos(props) {
 
   const handleDelete = (group) => {
     setGroup(group);
-    deleteGrupo(group.gid)
+    console.log(id);
+    const request = id
+      ? deleteGrupoAdmin(id, group.gid)
+      : deleteGrupo(group.gid);
+
+    request
       .then((resp) => {
         setMessage("Grupo excluido com sucesso");
         setType("success");
         setOpen(true);
-        getGrupos()
+        const request2 = id ? getGruposAdmin(id) : getGrupos();
+        request2
           .then((resp) => {
             setGroups(resp.data);
           })
@@ -148,12 +176,16 @@ export default function Grupos(props) {
 
   const handleSubmitEdit = (value) => {
     console.log(value);
-    putGrupo(group.gid, value)
+    const request = id
+      ? putGrupoAdmin(id, group.gid, value)
+      : putGrupo(group.gid, value);
+    request
       .then((resp) => {
         setMessage("Grupo editado com sucesso");
         setType("success");
         setOpen(true);
-        getGrupos()
+        const request2 = id ? getGruposAdmin(id) : getGrupos();
+        request2
           .then((resp) => {
             setGroups(resp.data);
           })
@@ -188,12 +220,13 @@ export default function Grupos(props) {
       <Modal
         isOpen={openModal}
         title="Editar Grupo"
+        label="Novo Grupo"
         value={group && group.nome}
         handleCloseModalProps={() => setOpenModal(false)}
         handleSubmitProps={handleSubmitEdit}
       />
 
-      <Grid item md="10">
+      <Grid item md={10}>
         <Grid container direction="column" alignItems="flex-start">
           <Typography className={classes.title}>Bem vindo!</Typography>
         </Grid>

@@ -25,8 +25,9 @@ import {
   putUserAdmin,
   putUserSenha,
   deleteUserAdmin,
+  putUserSenhaAdmin,
 } from "../../services/api/Auth";
-import { useNavigate } from "react-router-dom";
+import { Navigate, useNavigate } from "react-router-dom";
 
 const columns = [
   { id: "name", label: "Name", minWidth: 170 },
@@ -134,34 +135,17 @@ export default function Grupos(props) {
   const [message, setMessage] = useState("");
   const [type, setType] = useState("success");
   const [rows, setRows] = useState([]);
+  const navigate = useNavigate();
 
   useEffect(() => {
     //   PEGAR USUARIOS
     getUsersAdmin()
-      .then((resp) => console.log(resp.data))
+      .then((resp) => {
+        setRows(formatData(resp.data));
+        console.log(resp.data);
+      })
       .catch((err) => console.log(err.response));
-    // getLinks(id)
-    //   .then((resp) => {
-    //     setRows(formatData(resp.data));
-    //     console.log(resp.data);
-    //   })
-    //   .catch((err) => console.log(err));
-    // getGrupo(id)
-    //   .then((resp) => {
-    //     setNomeGroup(resp.data.nome);
-    //     console.log(resp.data);
-    //   })
-    //   .catch((err) => console.log(err));
   }, []);
-
-  //   const isValidUrl = (url) => {
-  //     try {
-  //       new URL(url);
-  //     } catch (e) {
-  //       return false;
-  //     }
-  //     return true;
-  //   };
 
   const actions = (row) => {
     return (
@@ -195,10 +179,8 @@ export default function Grupos(props) {
       return {
         name: row.nome,
         data: new Date(row.updatedAt).toLocaleDateString(),
-        gid: row.gid,
-        lid: row.lid,
         id: row.id,
-        url: row.url,
+        email: row.email,
         acoes: actions(row),
       };
     });
@@ -226,49 +208,68 @@ export default function Grupos(props) {
   const handleDelete = (user) => {
     setUser(user);
     // DELETAR USUARIO
-    // deleteLink(user.id)
-    //   .then((resp) => {
-    //     setMessage("Link excluido com sucesso");
-    //     setType("success");
-    //     setOpen(true);
-    //     // PEGAR USUARIOS
-    //     getLinks(id)
-    //       .then((resp) => {
-    //         setRows(formatData(resp.data));
-    //         console.log(resp.data);
-    //       })
-    //       .catch((err) => console.log(err));
-    //   })
-    //   .catch((err) => {
-    //     console.log(err);
-    //     setMessage(err.response.data.msg);
-    //     setType("error");
-    //     setOpen(true);
-    //   });
+    deleteUserAdmin(user.id)
+      .then((resp) => {
+        setMessage("Usuário excluido com sucesso");
+        setType("success");
+        setOpen(true);
+
+        getUsersAdmin()
+          .then((resp) => {
+            setRows(formatData(resp.data));
+            console.log(resp.data);
+          })
+          .catch((err) => console.log(err));
+      })
+      .catch((err) => {
+        console.log(err);
+        setMessage(err.response.data.msg);
+        setType("error");
+        setOpen(true);
+      });
   };
 
   const handleSubmitEdit = (value) => {
     console.log(value);
+    const data = {
+      nome: value.name,
+      email: value.email,
+    };
     // EDITAR USUARIO
-    // putLink(user.id, value)
-    //   .then((resp) => {
-    //     setMessage("Link editado com sucesso");
-    //     setType("success");
-    //     setOpen(true);
-    //     // PEGAR USUARIOS
-    //     getLinks(id)
-    //       .then((resp) => {
-    //         setRows(formatData(resp.data));
-    //         console.log(resp.data);
-    //       })
-    //       .catch((err) => console.log(err));
-    //   })
-    //   .catch((err) => {
-    //     console.log(err);
-    //     setMessage(err.response.data.msg);
-    //     setType("error");
-    //     setOpen(true);
-    //   });
+    putUserAdmin(user.id, data)
+      .then((resp) => {
+        const data2 = {
+          senha: value.password,
+          senhaAntiga: value.password,
+        };
+        putUserSenhaAdmin(user.id, data2)
+          .then(() => {
+            setMessage("Usuario editado com sucesso");
+            setType("success");
+            setOpen(true);
+          })
+          .catch((err) => {
+            setMessage(err.response.data.msg);
+            setType("error");
+            setOpen(true);
+          });
+        getUsersAdmin()
+          .then((resp) => {
+            setRows(formatData(resp.data));
+            console.log(resp.data);
+          })
+          .catch((err) => console.log(err));
+      })
+      .catch((err) => {
+        console.log(err);
+        setMessage(err.response.data.msg);
+        setType("error");
+        setOpen(true);
+      });
+  };
+
+  const handleClickUser = (row) => {
+    navigate(`/home/${row.id}`);
   };
 
   return (
@@ -343,9 +344,7 @@ export default function Grupos(props) {
                                 className={classes.tabelaItens}
                                 key={column.id}
                                 align={column.align}
-                                onClick={() => {
-                                  window.open(row.url, "_blank");
-                                }}
+                                onClick={() => handleClickUser(row)}
                               >
                                 {column.format && typeof value === "number"
                                   ? column.format(value)

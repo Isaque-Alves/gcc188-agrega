@@ -73,7 +73,7 @@ export default function CardLuis(props) {
         direction="column"
         alignItems="center"
         item
-        md="1"
+        md={1}
       >
         <img src={icone} />
       </Grid>
@@ -83,7 +83,7 @@ export default function CardLuis(props) {
         direction="column"
         alignItems="flex-start"
         item
-        md="9"
+        md={9}
       >
         <CardContent className={classes.texto} sx={{ flex: "1 0 auto" }}>
           <Typography
@@ -98,7 +98,7 @@ export default function CardLuis(props) {
           </Typography> */}
         </CardContent>
       </Grid>
-      <Grid Grid container direction="column" alignItems="center" item md="1">
+      <Grid Grid container direction="column" alignItems="center" item md={1}>
         <CardContent>
           <Button
             className={classes.button1}

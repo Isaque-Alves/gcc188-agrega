@@ -1,4 +1,4 @@
-import iniciar from '~/index';
+import appPromise from '~/index';
 import request from 'supertest';
 import { expect } from 'chai';
 
@@ -6,10 +6,10 @@ var app;
 
 before(async function() {
     this.timeout(10000);
-    app = await iniciar();
+    app = await appPromise;
 })
 
-describe('Testes', function() {
+describe('Testes Usuário', function() {
     it('registra um usuário', async function() {
         const res = await request(app)
             .post('/registrar')
@@ -40,6 +40,14 @@ describe('Testes', function() {
             .send({ email: 'usuario2@example.com', senha: 'teste1234' });
         expect(res.body).to.have.property('token');
         token2 = res.body.token;
+    })
+
+    it('altera senha', async function() {
+        const res = await request(app)
+            .put('/usuario/senha')
+            .set('Authorization', token)
+            .send({ senha: 'teste1234', senhaAntiga: 'teste123' })
+        expect(res.status).to.equal(200);
     })
 
     it('verifica se dados estão corretos', async function() {
@@ -206,4 +214,60 @@ describe('Testes', function() {
             .send()
         expect(res.status).to.equal(200);
     })
+})
+
+describe('Testes Admin', function() {
+    it('cria admin', async function() {
+        const res = await request(app)
+            .post('/registrar')
+            .send({ nome: 'admin do sistema', email: 'admin@exemplo.com', senha: 'senhaseguraaqui', admin: true })
+        expect(res.status).to.equal(200);
+    })
+
+    let token;
+    it('loga admin', async function() {
+        const res = await request(app)
+            .post('/login')
+            .send({ email: 'admin@exemplo.com', senha: 'senhaseguraaqui' })
+        expect(res.status).to.equal(200);
+        expect(res.body).to.have.key('token');
+        token = res.body.token;
+    })
+    
+    it('retorna informação do usuário admin', async function() {
+        const res = await request(app)
+            .get('/usuario')
+            .set('Authorization', token)
+            .send()
+        expect(res.status).to.equal(200);
+        expect(res.body).to.contain.all.keys('id', 'nome', 'email')
+    })
+
+    let id;
+    it('lista usuários', async function() {
+        const res = await request(app)
+            .get('/admin/usuarios')
+            .set('Authorization', token)
+            .send()
+        expect(res.status).to.equal(200);
+        expect(res.body).to.have.lengthOf(3);
+        id = res.body[0].id;
+    })
+
+    it('edita usuário', async function() {
+        const res = await request(app)
+            .put(`/admin/usuario/${id}`)
+            .set('Authorization', token)
+            .send({ nome: 'Usuario Teste Editado', email: 'novoemail@example.com' })
+        expect(res.status).to.equal(200);
+    })
+
+    it('deleta usuário', async function() {
+        const res = await request(app)
+            .delete(`/admin/usuario/${id}`)
+            .set('Authorization', token)
+            .send()
+        expect(res.status).to.equal(200);
+    })
+
 })

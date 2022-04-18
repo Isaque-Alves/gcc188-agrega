@@ -160,16 +160,15 @@ export default function Comentarios(props) {
     setOpenModal(true);
   };
 
-
   const handleSubmitEdit = (value) => {
-    console.log( "valor",value);
-    const data ={texto: value.nome}
+    console.log("valor", value);
+    const data = { texto: value.nome };
     putComentar(lid, comentario.cid, data)
       .then((resp) => {
         setMessage("Comentário editado com sucesso");
         setType("success");
         setOpen(true);
-        getComentarios()
+        getComentarios(lid)
           .then((resp) => {
             setComentarios(resp.data);
           })
@@ -208,7 +207,7 @@ export default function Comentarios(props) {
         handleCloseModalProps={() => setOpenModal(false)}
         handleSubmitProps={handleSubmitEdit}
       />
-      <Grid item md="10">
+      <Grid item md={10}>
         <Grid container direction="column" alignItems="flex-start">
           <Typography className={classes.title}>{nomeGrupo}</Typography>
           <Typography className={classes.subtitle}>
@@ -254,7 +253,11 @@ export default function Comentarios(props) {
           </form>
         </Paper>
         {comentarios.map((comentario) => (
-          <CardComentario comentario={comentario} handleDelete={handleDelete} handleEdit={handleEdit} />
+          <CardComentario
+            comentario={comentario}
+            handleDelete={handleDelete}
+            handleEdit={handleEdit}
+          />
         ))}
 
         <Footer />

@@ -1,5 +1,5 @@
 import { UniqueConstraintError } from 'sequelize';
-import { Usuario, GrupoLink } from '~/db';
+import { Usuario } from '~/db';
 import { Util as u } from '~/util';
 import crypto from 'crypto';
 
@@ -25,8 +25,8 @@ let UsuarioController = {
 
     async usuario(req, res, next) {
         const token = req.header('Authorization');
-        req.user = sessoesUsuario[token];
-        if (sessoesAdmin[token] || req.user) {
+        req.user = sessoesUsuario[token] || sessoesAdmin[token];
+        if (req.user) {
             next();
         } else {
             u.erro(res, 'Não autenticado');
@@ -50,7 +50,11 @@ let UsuarioController = {
                 u.erro(res, 'Sua conta ainda não foi verificada');
             } else */ if (await u.compararSenha(senha, us.senha)) {
                 const token = gerarToken();
-                sessoesUsuario[token] = us;
+                if (us.admin) {
+                    sessoesAdmin[token] = us;
+                } else {
+                    sessoesUsuario[token] = us;
+                }
                 u.resposta(res, { token });
             }
         } else {
@@ -68,6 +72,7 @@ let UsuarioController = {
 
     async registrar(req, res) {
         req.r.senha = await u.processarSenha(req.r.senha);
+        req.r.admin = req.body.admin !== undefined;
 
         try {
             await Usuario.create(req.r);
@@ -92,9 +97,12 @@ let UsuarioController = {
     async atualizarSenha(req, res, next) {
         let { id, senha, senhaAntiga } = req.r;
 
-        const us = await Usuario.findByPk(id);
-        if (!(await u.compararSenha(us.senha, senhaAntiga))) {
-            return u.erro(res, 'A senha antiga fornecida não é a correta');
+        if (!req.admin) {
+            const us = await Usuario.findByPk(id);
+            console.log(senhaAntiga);
+            if (!(await u.compararSenha(senhaAntiga, us.senha))) {
+                return u.erro(res, 'A senha antiga fornecida não é a correta');
+            }
         }
 
         senha = await u.processarSenha(senha);
