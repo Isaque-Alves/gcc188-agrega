@@ -193,7 +193,7 @@ export default function Grupos(props) {
         handleSubmitProps={handleSubmitEdit}
       />
 
-      <Grid item md="10">
+      <Grid item md={10}>
         <Grid container direction="column" alignItems="flex-start">
           <Typography className={classes.title}>Bem vindo!</Typography>
         </Grid>

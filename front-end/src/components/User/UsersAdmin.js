@@ -25,6 +25,7 @@ import {
   putUserAdmin,
   putUserSenha,
   deleteUserAdmin,
+  putUserSenhaAdmin,
 } from "../../services/api/Auth";
 import { useNavigate } from "react-router-dom";
 
@@ -138,7 +139,10 @@ export default function Grupos(props) {
   useEffect(() => {
     //   PEGAR USUARIOS
     getUsersAdmin()
-      .then((resp) => console.log(resp.data))
+      .then((resp) => {
+        setRows(formatData(resp.data));
+        console.log(resp.data);
+      })
       .catch((err) => console.log(err.response));
     // getLinks(id)
     //   .then((resp) => {
@@ -195,10 +199,8 @@ export default function Grupos(props) {
       return {
         name: row.nome,
         data: new Date(row.updatedAt).toLocaleDateString(),
-        gid: row.gid,
-        lid: row.lid,
         id: row.id,
-        url: row.url,
+        email: row.email,
         acoes: actions(row),
       };
     });
@@ -226,49 +228,64 @@ export default function Grupos(props) {
   const handleDelete = (user) => {
     setUser(user);
     // DELETAR USUARIO
-    // deleteLink(user.id)
-    //   .then((resp) => {
-    //     setMessage("Link excluido com sucesso");
-    //     setType("success");
-    //     setOpen(true);
-    //     // PEGAR USUARIOS
-    //     getLinks(id)
-    //       .then((resp) => {
-    //         setRows(formatData(resp.data));
-    //         console.log(resp.data);
-    //       })
-    //       .catch((err) => console.log(err));
-    //   })
-    //   .catch((err) => {
-    //     console.log(err);
-    //     setMessage(err.response.data.msg);
-    //     setType("error");
-    //     setOpen(true);
-    //   });
+    deleteUserAdmin(user.id)
+      .then((resp) => {
+        setMessage("Usuário excluido com sucesso");
+        setType("success");
+        setOpen(true);
+
+        getUsersAdmin()
+          .then((resp) => {
+            setRows(formatData(resp.data));
+            console.log(resp.data);
+          })
+          .catch((err) => console.log(err));
+      })
+      .catch((err) => {
+        console.log(err);
+        setMessage(err.response.data.msg);
+        setType("error");
+        setOpen(true);
+      });
   };
 
   const handleSubmitEdit = (value) => {
     console.log(value);
+    const data = {
+      nome: value.name,
+      email: value.email,
+    };
     // EDITAR USUARIO
-    // putLink(user.id, value)
-    //   .then((resp) => {
-    //     setMessage("Link editado com sucesso");
-    //     setType("success");
-    //     setOpen(true);
-    //     // PEGAR USUARIOS
-    //     getLinks(id)
-    //       .then((resp) => {
-    //         setRows(formatData(resp.data));
-    //         console.log(resp.data);
-    //       })
-    //       .catch((err) => console.log(err));
-    //   })
-    //   .catch((err) => {
-    //     console.log(err);
-    //     setMessage(err.response.data.msg);
-    //     setType("error");
-    //     setOpen(true);
-    //   });
+    putUserAdmin(user.id, data)
+      .then((resp) => {
+        const data2 = {
+          senha: value.password,
+          senhaAntiga: "",
+        };
+        putUserSenhaAdmin(user.id, data2)
+          .then(() => {
+            setMessage("Usuario editado com sucesso");
+            setType("success");
+            setOpen(true);
+          })
+          .catch((err) => {
+            setMessage(err.response.data.msg);
+            setType("error");
+            setOpen(true);
+          });
+        getUserAdmin()
+          .then((resp) => {
+            setRows(formatData(resp.data));
+            console.log(resp.data);
+          })
+          .catch((err) => console.log(err));
+      })
+      .catch((err) => {
+        console.log(err);
+        setMessage(err.response.data.msg);
+        setType("error");
+        setOpen(true);
+      });
   };
 
   return (

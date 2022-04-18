@@ -126,10 +126,10 @@ export default function Login(props) {
           {message}
         </Alert>
       </Snackbar>
-      <Grid item md="3">
+      <Grid item md={3}>
         <img src={logo} />
       </Grid>
-      <Grid item md="7">
+      <Grid item md={7}>
         <Paper variant="outlined" className={classes.paper}>
           <form onSubmit={formik.handleSubmit}>
             <Grid container direction="column" alignItems="flex-start">
