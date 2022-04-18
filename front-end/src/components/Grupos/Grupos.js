@@ -189,7 +189,6 @@ export default function Grupos(props) {
         isOpen={openModal}
         title="Editar Grupo"
         value={group && group.nome}
-        buttonTitle="testeButton"
         handleCloseModalProps={() => setOpenModal(false)}
         handleSubmitProps={handleSubmitEdit}
       />
