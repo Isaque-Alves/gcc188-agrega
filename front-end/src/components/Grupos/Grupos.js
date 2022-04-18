@@ -187,7 +187,7 @@ export default function Grupos(props) {
       </Snackbar>
       <Modal
         isOpen={openModal}
-        title="teste"
+        title="Editar Grupo"
         value={group && group.nome}
         buttonTitle="testeButton"
         handleCloseModalProps={() => setOpenModal(false)}
