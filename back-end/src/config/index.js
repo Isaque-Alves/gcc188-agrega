@@ -3,7 +3,7 @@ import { env } from "process";
 let c = {
   DB_NAME: "agrega",
   DB_USER: "root",
-  DB_PASSWORD: "3029IPa@",
+  DB_PASSWORD: "",
   DB_DIALECT: "mysql",
   DB_HOST: "localhost",
 

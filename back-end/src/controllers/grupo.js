@@ -27,7 +27,7 @@ let GrupoLinkController = {
   },
 
   async grupoProprio(req, res, next) {
-    const grupo = await GrupoLink.findAll({ where: req.r });
+    const [grupo] = await GrupoLink.findAll({ where: req.r });
     if (grupo) {
       next();
     } else {

@@ -14,7 +14,7 @@ let Util = {
             for (const nome of c) {
                 if (req.r[nome] != undefined) continue;
 
-                let info = campos[nome];
+                let info = campos[nome];                
                 let campo = req.body[nome] || req.params[nome];
 
                 if (req.user) {
