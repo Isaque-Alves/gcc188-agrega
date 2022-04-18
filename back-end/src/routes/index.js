@@ -34,6 +34,7 @@ router.use('/usuario', UC.usuario, u.requer('id'), usrRouter);
 // /usuario
 usrRouter
     .get('/', UC.encontrar)
+    .delete('/', UC.apagar)
     .put('/', u.requer('nome', 'email'), UC.atualizar, UC.encontrar)
     .put('/senha', u.requer('senha', 'senhaAntiga'), UC.atualizarSenha, UC.encontrar)
     // /usuario/grupos
