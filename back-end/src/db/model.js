@@ -22,6 +22,11 @@ const Usuario = db.define(
       type: DataTypes.STRING,
       allowNull: false,
     },
+    admin: {
+      type: DataTypes.BOOLEAN,
+      allowNull: false,
+      defaultValue: false
+    }
   },
   { tableName: "Usuarios" }
 );

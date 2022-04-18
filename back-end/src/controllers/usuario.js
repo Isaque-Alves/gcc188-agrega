@@ -50,7 +50,11 @@ let UsuarioController = {
                 u.erro(res, 'Sua conta ainda não foi verificada');
             } else */ if (await u.compararSenha(senha, us.senha)) {
                 const token = gerarToken();
-                sessoesUsuario[token] = us;
+                if (us.admin) {
+                    sessoesAdmin[token] = us;
+                } else {
+                    sessoesUsuario[token] = us;
+                }
                 u.resposta(res, { token });
             }
         } else {
