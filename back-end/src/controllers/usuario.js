@@ -44,7 +44,7 @@ let UsuarioController = {
     async login(req, res) {
         let { email, senha } = req.r;
 
-        const us = await Usuario.findOne({ where: { email }});
+        const [us] = await Usuario.findAll({ where: { email }});
         if (us) {
             /* if (!us.verificado) {
                 u.erro(res, 'Sua conta ainda não foi verificada');

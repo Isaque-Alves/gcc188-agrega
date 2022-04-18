@@ -59,7 +59,7 @@ usrGrpRouter
 // /usuario/link/:lid
 usrLnkRouter
     .get('/', LC.encontrar)
-    .put('/', u.requer('nome', 'url'), LC.atualizar)
+    .put('/', u.requer('nome', 'url'), LC.atualizar, LC.encontrar)
     .delete('/', LC.apagar);
 
 cmtRouter
