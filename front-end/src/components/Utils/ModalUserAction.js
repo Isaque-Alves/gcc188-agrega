@@ -167,21 +167,25 @@ export default function Modal(props) {
               md={12}
               className={classes.buttons}
             >
-              <Button
-                className={classes.button}
-                variant="contained"
-                onClick={handleClose}
-              >
-                CANCELAR
-              </Button>
-              <Button
-                className={classes.buttonSecond}
-                variant="contained"
-                type="button"
-                type="submit"
-              >
-                EDITAR
-              </Button>
+              <Grid item>
+                <Button
+                  className={classes.button}
+                  variant="contained"
+                  onClick={handleClose}
+                >
+                  CANCELAR
+                </Button>
+              </Grid>
+              <Grid item>
+                <Button
+                  className={classes.buttonSecond}
+                  variant="contained"
+                  type="button"
+                  type="submit"
+                >
+                  EDITAR
+                </Button>
+              </Grid>
             </Grid>
           </Grid>
         </form>

@@ -168,7 +168,7 @@ export default function Comentarios(props) {
         setMessage("Comentário editado com sucesso");
         setType("success");
         setOpen(true);
-        getComentarios()
+        getComentarios(lid)
           .then((resp) => {
             setComentarios(resp.data);
           })

@@ -1,5 +1,7 @@
 import { makeStyles } from "@material-ui/styles";
 import { Grid, Avatar, Typography, Paper, Button } from "@mui/material";
+import { useEffect, useState } from "react";
+import { getUser } from "../../services/api/Auth";
 
 const useStyles = makeStyles({
   comentario: {
@@ -33,6 +35,14 @@ const useStyles = makeStyles({
 export default function CardComentario(props) {
   const classes = useStyles(props);
   const { comentario, handleDelete, handleEdit } = props;
+  const [user, setUser] = useState({});
+
+  useEffect(() => {
+    getUser().then((resp) => {
+      setUser(resp.data);
+      console.log(resp.data);
+    });
+  }, []);
 
   const handleDeleteComentario = () => {
     handleDelete(comentario.cid);
@@ -49,7 +59,9 @@ export default function CardComentario(props) {
           <Avatar alt="User" />
         </Grid>
         <Grid item md={11}>
-          <Typography>{comentario.Usuario.nome}</Typography>
+          <Typography>
+            {comentario.Usuario && comentario.Usuario.nome}
+          </Typography>
           <Grid container>
             <Typography className={classes.comentarioText}>
               {comentario.texto}
@@ -63,9 +75,15 @@ export default function CardComentario(props) {
         justifyContent="flex-end"
         className={classes.buttons}
       >
-        <Button variant="contained" className={classes.buttonEdit} onClick={handleEditComentario}>
-          Editar
-        </Button>
+        {comentario.Usuario && comentario.Usuario.id == user.id ? (
+          <Button
+            variant="contained"
+            className={classes.buttonEdit}
+            onClick={handleEditComentario}
+          >
+            Editar
+          </Button>
+        ) : null}
         <Button
           variant="contained"
           className={classes.buttonExcluir}

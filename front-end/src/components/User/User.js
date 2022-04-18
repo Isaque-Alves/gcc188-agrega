@@ -108,7 +108,7 @@ export default function Login(props) {
           };
           putUserSenha(data2)
             .then(() => {
-              setMessage("Registro realizado com sucesso");
+              setMessage("Usuário editado com sucesso");
               setType("success");
               setOpen(true);
             })

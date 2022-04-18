@@ -21,6 +21,7 @@ ReactDOM.render(
       <Route path="login" element={<Login />} />
       <Route path="registrar" element={<Register />} />
       <Route path="home" element={<Grupos />} />
+      <Route path="home/:id" element={<Grupos />} />
       <Route path="grupo/:id" element={<Links />} />
       <Route path="grupo/:id/link/:lid" element={<Comentarios />} />
       <Route path="usuario" element={<User />} />
