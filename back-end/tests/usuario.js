@@ -225,6 +225,15 @@ describe('Testes Admin', function() {
         expect(res.body).to.have.key('token');
         token = res.body.token;
     })
+    
+    it('retorna informação do usuário admin', async function() {
+        const res = await request(app)
+            .get('/usuario')
+            .set('Authorization', token)
+            .send()
+        expect(res.status).to.equal(200);
+        expect(res.body).to.contain.all.keys('id', 'nome', 'email')
+    })
 
     let id;
     it('lista usuários', async function() {
@@ -252,4 +261,5 @@ describe('Testes Admin', function() {
             .send()
         expect(res.status).to.equal(200);
     })
+
 })
