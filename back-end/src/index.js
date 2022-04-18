@@ -12,7 +12,10 @@ app.use(cookieParser());
 app.use(cors());
 app.use(router);
 
-(async () => {
-    await db.sync({ logging: console.log });
-    app.listen(c.BACKEND_PORT);
-})();
+async function iniciar() {
+    await db.sync({ logging: console.log, force: c.TEST_MODE == "Y" });
+    app.listen(parseInt(c.BACKEND_PORT));
+    return app;
+}
+
+export default iniciar;
