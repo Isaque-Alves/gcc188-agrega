@@ -34,7 +34,7 @@ let UsuarioController = {
     },
 
     async naoAdmin(req, res, next) {
-        if (!req.admin) {
+        if ((req.admin && req.admin.id == req.user.id) || !req.admin) {
             next();
         } else {
             u.erro(res, 'Não autenticado');
