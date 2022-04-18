@@ -1,4 +1,4 @@
-import React, { useEffect } from "react";
+import React, { useEffect, useState } from "react";
 import {
   AppBar,
   Box,
@@ -17,17 +17,19 @@ import { makeStyles } from "@material-ui/styles";
 import isAuthenticated from "../../api/sidebar/auth/isAuthenticated";
 import { useNavigate } from "react-router-dom";
 import { RemoveCookie } from "../../utils/CookieUtil";
+import { getUser } from "../../services/api/Auth";
 
 const useStyles = makeStyles({
   navbar: {
     backgroundColor: "#212121",
   },
 });
-const settings = ["Logout"];
+const settings = ["Home", "Dash Admin", "Logout"];
 
 export default function ResponsiveAppBar(props) {
   const classes = useStyles(props);
   const navigate = useNavigate();
+  const [admin, setAdmin] = useState(false);
   const [anchorElNav, setAnchorElNav] = React.useState(null);
   const [anchorElUser, setAnchorElUser] = React.useState(null);
 
@@ -46,13 +48,22 @@ export default function ResponsiveAppBar(props) {
     setAnchorElUser(null);
   };
 
-  const handleClickLogout = () => {
-    RemoveCookie("token");
-    navigate("/login");
+  const handleClick = (setting) => {
+    if (setting == "Logout") {
+      RemoveCookie("token");
+      navigate("/login");
+    } else if (setting == "Dash Admin") {
+      navigate("/admin/usuarios");
+    } else {
+      navigate("/home");
+    }
   };
 
   useEffect(() => {
     isAuthenticated().then((resp) => console.log(resp));
+    getUser().then((resp) => {
+      setAdmin(resp.data.admin);
+    });
   }, []);
 
   return (
@@ -105,11 +116,23 @@ export default function ResponsiveAppBar(props) {
                   open={Boolean(anchorElUser)}
                   onClose={handleCloseUserMenu}
                 >
-                  {settings.map((setting) => (
-                    <MenuItem key={setting} onClick={handleClickLogout}>
-                      <Typography textAlign="center">{setting}</Typography>
-                    </MenuItem>
-                  ))}
+                  {settings.map((setting) =>
+                    admin ? (
+                      <MenuItem
+                        key={setting}
+                        onClick={() => handleClick(setting)}
+                      >
+                        <Typography textAlign="center">{setting}</Typography>
+                      </MenuItem>
+                    ) : setting != "Dash Admin" ? (
+                      <MenuItem
+                        key={setting}
+                        onClick={() => handleClick(setting)}
+                      >
+                        <Typography textAlign="center">{setting}</Typography>
+                      </MenuItem>
+                    ) : null
+                  )}
                 </Menu>
               </Box>
             </Grid>
