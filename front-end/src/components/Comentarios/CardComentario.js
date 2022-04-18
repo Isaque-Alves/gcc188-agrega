@@ -32,10 +32,14 @@ const useStyles = makeStyles({
 
 export default function CardComentario(props) {
   const classes = useStyles(props);
-  const { comentario, handleDelete } = props;
+  const { comentario, handleDelete, handleEdit } = props;
 
   const handleDeleteComentario = () => {
     handleDelete(comentario.cid);
+  };
+
+  const handleEditComentario = () => {
+    handleEdit(comentario);
   };
   console.log(comentario);
   return (
@@ -59,7 +63,7 @@ export default function CardComentario(props) {
         justifyContent="flex-end"
         className={classes.buttons}
       >
-        <Button variant="contained" className={classes.buttonEdit}>
+        <Button variant="contained" className={classes.buttonEdit} onClick={handleEditComentario}>
           Editar
         </Button>
         <Button
