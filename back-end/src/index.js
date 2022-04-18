@@ -19,4 +19,6 @@ async function iniciar() {
     return app;
 }
 
-export default iniciar;
+const appPromise = iniciar();
+
+export default appPromise;
