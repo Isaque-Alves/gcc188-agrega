@@ -12,6 +12,7 @@ import Grupos from "./views/Grupos";
 import Links from "./views/Links";
 import Comentarios from "./views/Comentarios";
 import User from "./views/User";
+import UsersAdmin from "./views/UsersAdmin";
 
 ReactDOM.render(
   <BrowserRouter>
@@ -23,6 +24,7 @@ ReactDOM.render(
       <Route path="grupo/:id" element={<Links />} />
       <Route path="grupo/:id/link/:lid" element={<Comentarios />} />
       <Route path="usuario" element={<User />} />
+      <Route path="admin/usuarios" element={<UsersAdmin />} />
     </Routes>
   </BrowserRouter>,
   document.getElementById("root")
