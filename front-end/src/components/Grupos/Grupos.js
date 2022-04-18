@@ -20,6 +20,7 @@ import {
   getGruposAdmin,
   deleteGrupoAdmin,
   putGrupoAdmin,
+  registerGrupoAdmin,
 } from "../../services/api/Grupos";
 
 import Footer from "../Utils/Footer";
@@ -114,13 +115,19 @@ export default function Grupos(props) {
     },
     validationSchema: validationSchema,
     onSubmit: (values) => {
-      registerGrupo(values)
+      const request = id
+        ? registerGrupoAdmin(id, values)
+        : registerGrupo(values);
+
+      request
         .then((resp) => {
           setMessage("Grupo cadastrado com sucesso");
           setType("success");
           setOpen(true);
           formik.resetForm();
-          getGrupos()
+          const request2 = id ? getGruposAdmin(id) : getGrupos();
+
+          request2
             .then((resp) => {
               setGroups(resp.data);
             })
