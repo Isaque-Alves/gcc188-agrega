@@ -1,4 +1,4 @@
-import * as React from "react";
+import React, { useEffect } from "react";
 import {
   AppBar,
   Box,
@@ -14,18 +14,20 @@ import {
 } from "@mui/material";
 import logo from "../../assets/logo2.png";
 import { makeStyles } from "@material-ui/styles";
+import isAuthenticated from "../../api/sidebar/auth/isAuthenticated";
+import { useNavigate } from "react-router-dom";
+import { RemoveCookie } from "../../utils/CookieUtil";
 
 const useStyles = makeStyles({
   navbar: {
     backgroundColor: "#212121",
   },
 });
-
-const pages = ["Products", "Pricing", "Blog"];
-const settings = ["Profile", "Account", "Dashboard", "Logout"];
+const settings = ["Logout"];
 
 export default function ResponsiveAppBar(props) {
   const classes = useStyles(props);
+  const navigate = useNavigate();
   const [anchorElNav, setAnchorElNav] = React.useState(null);
   const [anchorElUser, setAnchorElUser] = React.useState(null);
 
@@ -43,6 +45,15 @@ export default function ResponsiveAppBar(props) {
   const handleCloseUserMenu = () => {
     setAnchorElUser(null);
   };
+
+  const handleClickLogout = () => {
+    RemoveCookie("token");
+    navigate("/login");
+  };
+
+  useEffect(() => {
+    isAuthenticated().then((resp) => console.log(resp));
+  }, []);
 
   return (
     <AppBar position="fixed" className={classes.navbar}>
@@ -95,7 +106,7 @@ export default function ResponsiveAppBar(props) {
                   onClose={handleCloseUserMenu}
                 >
                   {settings.map((setting) => (
-                    <MenuItem key={setting} onClick={handleCloseUserMenu}>
+                    <MenuItem key={setting} onClick={handleClickLogout}>
                       <Typography textAlign="center">{setting}</Typography>
                     </MenuItem>
                   ))}
