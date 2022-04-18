@@ -27,7 +27,7 @@ import {
   deleteUserAdmin,
   putUserSenhaAdmin,
 } from "../../services/api/Auth";
-import { useNavigate } from "react-router-dom";
+import { Navigate, useNavigate } from "react-router-dom";
 
 const columns = [
   { id: "name", label: "Name", minWidth: 170 },
@@ -135,6 +135,7 @@ export default function Grupos(props) {
   const [message, setMessage] = useState("");
   const [type, setType] = useState("success");
   const [rows, setRows] = useState([]);
+  const navigate = useNavigate();
 
   useEffect(() => {
     //   PEGAR USUARIOS
@@ -144,28 +145,7 @@ export default function Grupos(props) {
         console.log(resp.data);
       })
       .catch((err) => console.log(err.response));
-    // getLinks(id)
-    //   .then((resp) => {
-    //     setRows(formatData(resp.data));
-    //     console.log(resp.data);
-    //   })
-    //   .catch((err) => console.log(err));
-    // getGrupo(id)
-    //   .then((resp) => {
-    //     setNomeGroup(resp.data.nome);
-    //     console.log(resp.data);
-    //   })
-    //   .catch((err) => console.log(err));
   }, []);
-
-  //   const isValidUrl = (url) => {
-  //     try {
-  //       new URL(url);
-  //     } catch (e) {
-  //       return false;
-  //     }
-  //     return true;
-  //   };
 
   const actions = (row) => {
     return (
@@ -260,7 +240,7 @@ export default function Grupos(props) {
       .then((resp) => {
         const data2 = {
           senha: value.password,
-          senhaAntiga: "",
+          senhaAntiga: value.password,
         };
         putUserSenhaAdmin(user.id, data2)
           .then(() => {
@@ -273,7 +253,7 @@ export default function Grupos(props) {
             setType("error");
             setOpen(true);
           });
-        getUserAdmin()
+        getUsersAdmin()
           .then((resp) => {
             setRows(formatData(resp.data));
             console.log(resp.data);
@@ -286,6 +266,10 @@ export default function Grupos(props) {
         setType("error");
         setOpen(true);
       });
+  };
+
+  const handleClickUser = (row) => {
+    navigate(`/home/${row.id}`);
   };
 
   return (
@@ -360,9 +344,7 @@ export default function Grupos(props) {
                                 className={classes.tabelaItens}
                                 key={column.id}
                                 align={column.align}
-                                onClick={() => {
-                                  window.open(row.url, "_blank");
-                                }}
+                                onClick={() => handleClickUser(row)}
                               >
                                 {column.format && typeof value === "number"
                                   ? column.format(value)
