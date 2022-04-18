@@ -42,6 +42,14 @@ describe('Testes Usuário', function() {
         token2 = res.body.token;
     })
 
+    it('altera senha', async function() {
+        const res = await request(app)
+            .put('/usuario/senha')
+            .set('Authorization', token)
+            .send({ senha: 'teste1234', senhaAntiga: 'teste123' })
+        expect(res.status).to.equal(200);
+    })
+
     it('verifica se dados estão corretos', async function() {
         const res = await request(app)
             .get('/usuario')
