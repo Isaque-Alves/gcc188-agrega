@@ -1,3 +1,4 @@
+import React, { useEffect, useState } from "react";
 import { makeStyles } from "@material-ui/styles";
 import {
   Grid,
@@ -8,26 +9,19 @@ import {
   Snackbar,
   Alert,
 } from "@mui/material";
+import CardComentario from "./CardComentario";
 import Footer from "../Utils/Footer";
-import React, { useEffect, useState } from "react";
-import Table from "@mui/material/Table";
-import TableBody from "@mui/material/TableBody";
-import TableCell from "@mui/material/TableCell";
-import TableContainer from "@mui/material/TableContainer";
-import TableHead from "@mui/material/TableHead";
-import TablePagination from "@mui/material/TablePagination";
-import TableRow from "@mui/material/TableRow";
 
 import { useFormik } from "formik";
 import * as yup from "yup";
-import { getLinks, registerLink } from "../../services/api/Links";
+import { getLink } from "../../services/api/Links";
+import { getGrupo } from "../../services/api/Grupos";
+import {
+  getComentarios,
+  comentar,
+  deleteComentario,
+} from "../../services/api/Comentarios";
 import { useParams } from "react-router-dom";
-
-const columns = [
-  { id: "name", label: "Name", minWidth: 170 },
-  { id: "data", label: "Data", minWidth: 170 },
-  { id: "acoes", label: "Ações", minWidth: 170 },
-];
 
 const useStyles = makeStyles({
   root: {
@@ -44,22 +38,7 @@ const useStyles = makeStyles({
     color: "#1E2134",
     marginTop: 24,
   },
-  tabela: {
-    fontFamily: "Inter, sans-serif",
-    fontStyle: "normal",
-    fontWeight: 600,
-    fontSize: 18,
-    lineHeight: "150%",
-    color: "#1E2134",
-  },
-  tabelaItens: {
-    fontFamily: "Inter, sans-serif",
-    fontStyle: "normal",
-    fontWeight: 400,
-    fontSize: 14,
-    lineHeight: "150%",
-    color: "#1E2134",
-  },
+
   subtitle: {
     fontFamily: "Inter, sans-serif",
     fontStyle: "normal",
@@ -79,11 +58,6 @@ const useStyles = makeStyles({
     height: "3.5vw",
     backgroundColor: "#003ECB",
   },
-  grid: {
-    display: "flex",
-    flexDirection: "column",
-    marginLeft: 10,
-  },
   field: {
     fontFamily: "Inter",
     fontStyle: "normal",
@@ -92,142 +66,90 @@ const useStyles = makeStyles({
     lineHeight: "166%",
     color: "#506176",
   },
-  button1: {
-    marginTop: 5,
-    marginLeft: 5,
-    backgroundColor: "#F48927",
-    "&:hover": {
-      backgroundColor: "#F48927",
-    },
-    width: "7vw",
-  },
-  button2: {
-    marginTop: 5,
-    marginLeft: 5,
-    background: "#003ECB",
-    width: "7vw",
-  },
-  button3: {
-    marginTop: 5,
-    marginLeft: 5,
-    background: "#E31B0C",
-    "&:hover": {
-      background: "#E31B0C",
-    },
-    width: "7vw",
-  },
   containerButton: {
     marginTop: 24,
   },
 });
 
 export default function Comentarios(props) {
-  const [page, setPage] = useState(0);
-  const [rowsPerPage, setRowsPerPage] = useState(10);
   const classes = useStyles(props);
-  const { id } = useParams();
+  const { id, lid } = useParams();
   const [open, setOpen] = useState(false);
   const [message, setMessage] = useState("");
   const [type, setType] = useState("success");
+  const [link, setLink] = useState();
+  const [nomeGrupo, setNomeGrupo] = useState();
+  const [comentarios, setComentarios] = useState([]);
 
   const handleClose = () => {
     setOpen(false);
   };
 
   useEffect(() => {
-    getLinks(id)
-      .then((resp) => console.log(resp))
+    getLink(id, lid)
+      .then((resp) => setLink(resp.data))
+      .catch((err) => console.log(err));
+
+    getGrupo(id)
+      .then((resp) => {
+        setNomeGrupo(resp.data.nome);
+        console.log(resp.data);
+      })
+      .catch((err) => console.log(err));
+    getComentarios(lid)
+      .then((resp) => setComentarios(resp.data))
       .catch((err) => console.log(err));
   }, []);
 
   const validationSchema = yup.object({
-    text: yup.string("Enter your text").required("Text is required"),
+    texto: yup.string("Enter your text").required("Text is required"),
   });
 
   const formik = useFormik({
     initialValues: {
-      text: "",
+      texto: "",
     },
     validationSchema: validationSchema,
     onSubmit: (values) => {
-      //   console.log(data);
-      //   registerLink(id, data)
-      //     .then((resp) => {
-      //       setMessage("link cadastrado com sucesso");
-      //       setType("success");
-      //       setOpen(true);
-      //     })
-      //     .catch((err) => {
-      //       console.log(err.response.data.msg);
-      //       setMessage(err.response.data.msg);
-      //       setType("error");
-      //       setOpen(true);
-      //     });
+      console.log(values);
+      comentar(lid, values)
+        .then((resp) => {
+          setMessage("comentario feito com sucesso");
+          setType("success");
+          setOpen(true);
+          formik.resetForm();
+          getComentarios(lid)
+            .then((resp) => setComentarios(resp.data))
+            .catch((err) => console.log(err));
+        })
+        .catch((err) => {
+          console.log(err.response.data.msg);
+          setMessage(err.response.data.msg);
+          setType("error");
+          setOpen(true);
+        });
     },
   });
 
-  const rows = [
-    {
-      name: "Link X",
-      data: "21 Jun 2021 - 17H",
-      acoes: (
-        <Grid>
-          <Button className={classes.button1} variant="contained" type="">
-            Acessar
-          </Button>
-          <Button className={classes.button2} variant="contained" type="">
-            Editar
-          </Button>
-          <Button className={classes.button3} variant="contained" type="">
-            Excluir
-          </Button>
-        </Grid>
-      ),
-    },
-    {
-      name: "Link X",
-      data: "21 Jun 2021 - 17H",
-      acoes: (
-        <Grid>
-          <Button className={classes.button1} variant="contained" type="">
-            Acessar
-          </Button>
-          <Button className={classes.button2} variant="contained" type="">
-            Editar
-          </Button>
-          <Button className={classes.button3} variant="contained" type="">
-            Excluir
-          </Button>
-        </Grid>
-      ),
-    },
-    {
-      name: "Link X",
-      data: "21 Jun 2021 - 17H",
-      acoes: (
-        <Grid>
-          <Button className={classes.button1} variant="contained" type="">
-            Acessar
-          </Button>
-          <Button className={classes.button2} variant="contained" type="">
-            Editar
-          </Button>
-          <Button className={classes.button3} variant="contained" type="">
-            Excluir
-          </Button>
-        </Grid>
-      ),
-    },
-  ];
-
-  const handleChangePage = (event, newPage) => {
-    setPage(newPage);
+  const handleDelete = (cid) => {
+    deleteComentario(lid, cid)
+      .then((resp) => {
+        setMessage("comentario deletado com sucesso");
+        setType("success");
+        setOpen(true);
+        formik.resetForm();
+        getComentarios(lid)
+          .then((resp) => setComentarios(resp.data))
+          .catch((err) => console.log(err));
+      })
+      .catch((err) => {
+        console.log(err.response.data.msg);
+        setMessage(err.response.data.msg);
+        setType("error");
+        setOpen(true);
+      });
   };
 
-  const handleChangeRowsPerPage = (event) => {
-    setRowsPerPage(+event.target.value);
-    setPage(0);
-  };
   return (
     <Grid
       container
@@ -248,20 +170,25 @@ export default function Comentarios(props) {
       </Snackbar>
       <Grid item md="10">
         <Grid container direction="column" alignItems="flex-start">
-          <Typography className={classes.title}>Nome do grupo</Typography>
-          <Typography className={classes.subtitle}>Nome do Link</Typography>
+          <Typography className={classes.title}>{nomeGrupo}</Typography>
+          <Typography className={classes.subtitle}>
+            {link && link.nome} -{" "}
+            <a href={link && link.url} target="_blank">
+              {link && link.url}
+            </a>
+          </Typography>
         </Grid>
         <Paper variant="outlined" className={classes.paper}>
           <form onSubmit={formik.handleSubmit}>
             <Grid container alignItems="flex-start">
               <TextField
                 className={classes.field}
-                value={formik.values.text}
+                value={formik.values.texto}
                 onChange={formik.handleChange}
-                error={formik.touched.text && Boolean(formik.errors.text)}
-                helperText={formik.touched.text && formik.errors.text}
+                error={formik.touched.texto && Boolean(formik.errors.texto)}
+                helperText={formik.touched.texto && formik.errors.texto}
                 id="filled-email-input"
-                name="text"
+                name="texto"
                 fullWidth
                 label="Adicione um comentario"
                 type="text"
@@ -286,66 +213,10 @@ export default function Comentarios(props) {
             </Grid>
           </form>
         </Paper>
-        <Paper variant="outlined" className={classes.paper}>
-          <Grid container alignItems="flex-start">
-            <TableContainer sx={{ maxHeight: 440 }}>
-              <Table stickyHeader aria-label="sticky table">
-                <TableHead>
-                  <TableRow>
-                    {columns.map((column) => (
-                      <TableCell
-                        className={classes.tabela}
-                        key={column.id}
-                        align={column.align}
-                        style={{ minWidth: column.minWidth }}
-                      >
-                        {column.label}
-                      </TableCell>
-                    ))}
-                  </TableRow>
-                </TableHead>
-                <TableBody>
-                  {rows
-                    .slice(page * rowsPerPage, page * rowsPerPage + rowsPerPage)
-                    .map((row) => {
-                      return (
-                        <TableRow
-                          hover
-                          role="checkbox"
-                          tabIndex={-1}
-                          key={row.code}
-                        >
-                          {columns.map((column) => {
-                            const value = row[column.id];
-                            return (
-                              <TableCell
-                                className={classes.tabelaItens}
-                                key={column.id}
-                                align={column.align}
-                              >
-                                {column.format && typeof value === "number"
-                                  ? column.format(value)
-                                  : value}
-                              </TableCell>
-                            );
-                          })}
-                        </TableRow>
-                      );
-                    })}
-                </TableBody>
-              </Table>
-            </TableContainer>
-            <TablePagination
-              rowsPerPageOptions={[10]}
-              component="div"
-              count={rows.length}
-              rowsPerPage={rowsPerPage}
-              page={page}
-              onPageChange={handleChangePage}
-              onRowsPerPageChange={handleChangeRowsPerPage}
-            />
-          </Grid>
-        </Paper>
+        {comentarios.map((comentario) => (
+          <CardComentario comentario={comentario} handleDelete={handleDelete} />
+        ))}
+
         <Footer />
       </Grid>
     </Grid>
