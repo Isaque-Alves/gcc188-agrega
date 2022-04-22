@@ -85,9 +85,9 @@ describe('Testes', function() {
         const res = await request(app)
             .put(`/usuario/grupo/${gid2}`)
             .set('Authorization', token)
-            .set({ nome: 'grupo de teste, mas editado' })
-            .send()
-        console.log(res.body);
+            .send({ nome: 'grupo de teste, mas editado' })
+        expect(res.body).to.include.all.keys('id', 'gid', 'nome');
+        expect(res.body.nome).to.equal('grupo de teste, mas editado')
     })
 
     it('deleta grupo de links', async function() {
@@ -147,6 +147,55 @@ describe('Testes', function() {
             .delete(`/usuario/link/${lid}`)
             .set('Authorization', token2)
             .send()
+        expect(res.status).to.equal(400);
+    })
+
+    let cid, cid2;
+    it('comenta em um link', async function() {
+        const res = await request(app)
+            .post(`/usuario/link/${lid}/comentario`)
+            .set('Authorization', token)
+            .send({ texto: 'lorem ipsum' })
+        expect(res.status).to.equal(200);
+        expect(res.body).to.contain.all.keys('id', 'lid', 'cid', 'texto');
+        expect(res.body.texto).to.equal('lorem ipsum');
+        cid = res.body.cid;
+    })
+
+    it('outro usuário comenta em um link', async function() {
+        const res = await request(app)
+            .post(`/usuario/link/${lid}/comentario`)
+            .set('Authorization', token2)
+            .send({ texto: 'dolor sit amet' })
+        expect(res.status).to.equal(200);
+        expect(res.body).to.contain.all.keys('id', 'lid', 'cid', 'texto');
+        expect(res.body.texto).to.equal('dolor sit amet');
+        cid2 = res.body.cid;
+    })
+
+    it('lista comentários', async function() {
+        const res = await request(app)
+            .get(`/link/${lid}/comentarios`)
+            .send()
+        expect(res.status).to.equal(200);
+        expect(res.body).to.have.lengthOf(2);
+    })
+
+    it('edita comentário do usuário', async function() {
+        const res = await request(app)
+            .put(`/usuario/link/${lid}/comentario/${cid}`)
+            .set('Authorization', token)
+            .send({ texto: 'lorem ipsum!' })
+        expect(res.status).to.equal(200);
+        expect(res.body).to.contain.all.keys('id', 'lid', 'cid', 'texto');
+        expect(res.body.texto).to.equal('lorem ipsum!');
+    })
+
+    it('tenta editar comentário de outro usuário', async function() {
+        const res = await request(app)
+            .put(`/usuario/link/${lid}/comentario/${cid}`)
+            .set('Authorization', token2)
+            .send({ texto: 'lorem ipsum?' })
         expect(res.status).to.equal(400);
     })
 })

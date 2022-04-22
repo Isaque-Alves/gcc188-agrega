@@ -6,9 +6,9 @@ let ComentarioController = {
     u.resposta(res, await Comentario.create(req.r));
   },
 
-    async encontrar(req, res) {
-        u.resposta(res, await Comentario.findByPk(req.r.cid));
-    },
+  async encontrar(req, res) {
+    u.resposta(res, await Comentario.findByPk(req.r.cid));
+  },
 
   async atualizar(req, res, next) {
     let { texto, cid } = req.r;
@@ -29,8 +29,8 @@ let ComentarioController = {
   },
 
   async comentarioProprio(req, res, next) {
-    const link = await Comentario.findAll({ where: req.r });
-    if (link) {
+    const [comentario] = await Comentario.findAll({ where: req.r });
+    if (comentario) {
       next();
     } else {
       u.erro(res, "Acesso negado");
