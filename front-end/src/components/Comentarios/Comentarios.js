@@ -20,8 +20,10 @@ import {
   getComentarios,
   comentar,
   deleteComentario,
+  putComentar,
 } from "../../services/api/Comentarios";
 import { useParams } from "react-router-dom";
+import Modal from "../Utils/ModalAction";
 
 const useStyles = makeStyles({
   root: {
@@ -79,7 +81,9 @@ export default function Comentarios(props) {
   const [type, setType] = useState("success");
   const [link, setLink] = useState();
   const [nomeGrupo, setNomeGrupo] = useState();
+  const [comentario, setComentario] = useState([]);
   const [comentarios, setComentarios] = useState([]);
+  const [openModal, setOpenModal] = useState(false);
 
   const handleClose = () => {
     setOpen(false);
@@ -150,6 +154,35 @@ export default function Comentarios(props) {
       });
   };
 
+  const handleEdit = (comentario) => {
+    console.log(comentario);
+    setComentario(comentario);
+    setOpenModal(true);
+  };
+
+
+  const handleSubmitEdit = (value) => {
+    console.log( "valor",value);
+    const data ={texto: value.nome}
+    putComentar(lid, comentario.cid, data)
+      .then((resp) => {
+        setMessage("Comentário editado com sucesso");
+        setType("success");
+        setOpen(true);
+        getComentarios()
+          .then((resp) => {
+            setComentarios(resp.data);
+          })
+          .catch((err) => console.log(err));
+      })
+      .catch((err) => {
+        console.log(err);
+        setMessage(err.response.data.msg);
+        setType("error");
+        setOpen(true);
+      });
+  };
+
   return (
     <Grid
       container
@@ -168,6 +201,13 @@ export default function Comentarios(props) {
           {message}
         </Alert>
       </Snackbar>
+      <Modal
+        isOpen={openModal}
+        title="Editar Comentário"
+        value={comentario && comentario.texto}
+        handleCloseModalProps={() => setOpenModal(false)}
+        handleSubmitProps={handleSubmitEdit}
+      />
       <Grid item md="10">
         <Grid container direction="column" alignItems="flex-start">
           <Typography className={classes.title}>{nomeGrupo}</Typography>
@@ -214,7 +254,7 @@ export default function Comentarios(props) {
           </form>
         </Paper>
         {comentarios.map((comentario) => (
-          <CardComentario comentario={comentario} handleDelete={handleDelete} />
+          <CardComentario comentario={comentario} handleDelete={handleDelete} handleEdit={handleEdit} />
         ))}
 
         <Footer />
