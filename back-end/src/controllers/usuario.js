@@ -45,18 +45,17 @@ let UsuarioController = {
         let { email, senha } = req.r;
 
         const [us] = await Usuario.findAll({ where: { email }});
-        if (us) {
+        if (us && await u.compararSenha(senha, us.senha)) {
             /* if (!us.verificado) {
                 u.erro(res, 'Sua conta ainda não foi verificada');
-            } else */ if (await u.compararSenha(senha, us.senha)) {
-                const token = gerarToken();
-                if (us.admin) {
-                    sessoesAdmin[token] = us;
-                } else {
-                    sessoesUsuario[token] = us;
-                }
-                u.resposta(res, { token });
+            }*/
+            const token = gerarToken();
+            if (us.admin) {
+                sessoesAdmin[token] = us;
+            } else {
+                sessoesUsuario[token] = us;
             }
+            u.resposta(res, { token });
         } else {
             u.erro(res, 'Credenciais incorretas');
         }

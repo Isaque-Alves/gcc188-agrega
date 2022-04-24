@@ -2,10 +2,10 @@
   "name": "agrega",
   "version": "1.0.0",
   "scripts": {
-    "start": "dotenv-run-script concurrently --kill-others \"npm run back-end start\" \"npm run front-end start\"",
-    "test": "dotenv-run-script concurrently --kill-others \"npm run start\" \"cross-env TEST_MODE=Y npm run mocha -- tests/\"",
-    "back-end": "npm run --prefix back-end --",
-    "front-end": "npm run --prefix front-end --",
+    "start": "concurrently --kill-others \"npm run back-end start\" \"npm run front-end start\"",
+    "test": "concurrently --kill-others \"npm run start\" \"cross-env TEST_MODE=Y npm run mocha -- tests/\"",
+    "back-end": "dotenv-run-script --prefix back-end --",
+    "front-end": "dotenv-run-script --prefix front-end --",
     "build": "dotenv-run-script .env .env.production front-end build",
     "mocha": "mocha",
     "concurrently": "concurrently"
