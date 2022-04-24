@@ -6,7 +6,7 @@ O conhecimento presente na internet é extremamente vasto, vários sites trazem 
 
 - [Javascript](https://www.javascript.com/) - A linguagem usada
 - [ReactJS](https://reactjs.org/) - O framework usado
-- [Node.js](https://nodejs.org/en/) 16.14.2 - O framework usado
+- [Node.js](https://nodejs.org/en/) 16.x / 17.x - O framework usado
 - [MariaDB](https://mariadb.org/) 10.8 - Banco de dados utilizado
 - [OCI](https://www.oracle.com/cloud/) - Servidor utilizado
 
