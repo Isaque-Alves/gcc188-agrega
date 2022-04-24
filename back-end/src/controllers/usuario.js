@@ -98,7 +98,6 @@ let UsuarioController = {
 
         if (!req.admin) {
             const us = await Usuario.findByPk(id);
-            console.log(senhaAntiga);
             if (!(await u.compararSenha(senhaAntiga, us.senha))) {
                 return u.erro(res, 'A senha antiga fornecida não é a correta');
             }

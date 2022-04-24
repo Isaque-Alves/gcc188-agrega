@@ -3,12 +3,15 @@
   "version": "1.0.0",
   "scripts": {
     "start": "concurrently --kill-others \"npm run back-end start\" \"npm run front-end start\"",
-    "test": "concurrently --kill-others \"npm run start\" \"cross-env TEST_MODE=Y npm run mocha -- tests/\"",
+    "pretest": "npm run back-end test",
+    "test": "npm run teste-sistema",
+    "teste-sistema": "concurrently --kill-others \"cross-env TEST_MODE=Y npm run start\" \"npm run dotenv-run-script mocha -- tests/\"",
+    "dotenv-run-script": "dotenv-run-script",
     "back-end": "dotenv-run-script --prefix back-end --",
     "front-end": "dotenv-run-script --prefix front-end --",
-    "build": "dotenv-run-script .env .env.production front-end build",
-    "mocha": "mocha",
-    "concurrently": "concurrently"
+    "back-end-production": "dotenv-run-script .env .env.production --prefix back-end --",
+    "front-end-production": "dotenv-run-script .env .env.production --prefix front-end --",
+    "mocha": "mocha"
   },
   "repository": {
     "type": "git",
@@ -29,6 +32,9 @@
     "chai": "^4.3.6",
     "cross-env": "^7.0.3",
     "mocha": "^9.2.2",
-    "puppeteer": "^13.6.0"
-  }
+    "puppeteer": "^13.6.0",
+    "selenium": "^2.20.0",
+    "selenium-webdriver": "^4.1.1"
+  },
+  "type": "module"
 }

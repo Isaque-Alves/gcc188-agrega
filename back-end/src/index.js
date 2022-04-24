@@ -14,11 +14,11 @@ app.use(cors());
 app.use(router);
 
 async function iniciar() {
-    await db.sync({ logging: console.log, force: c.TEST_MODE == "Y" });
-    app.listen(parseInt(c.BACKEND_PORT));
-    return app;
+    await db.sync({ force: c.TEST_MODE === "Y" });
+    const server = app.listen(parseInt(c.BACKEND_PORT));
+    return { app, server };
 }
 
-const appPromise = iniciar();
+const appserver = iniciar();
 
-export default appPromise;
+export default appserver;

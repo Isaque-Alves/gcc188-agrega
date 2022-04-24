@@ -1,12 +1,12 @@
-import appPromise from '~/index';
+import appserver from '~/index';
 import request from 'supertest';
 import { expect } from 'chai';
 
-var app;
+var app, server;
 
 before(async function() {
-    this.timeout(10000);
-    app = await appPromise;
+    this.timeout(100000);
+    ({app, server} = await appserver);
 })
 
 describe('Testes Usuário', function() {
@@ -270,4 +270,8 @@ describe('Testes Admin', function() {
         expect(res.status).to.equal(200);
     })
 
+})
+
+after(async function() {
+    server.close();
 })

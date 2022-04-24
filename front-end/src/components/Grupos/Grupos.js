@@ -220,7 +220,7 @@ export default function Grupos(props) {
       <Modal
         isOpen={openModal}
         title="Editar Grupo"
-        label="Novo Grupo"
+        label="Novo nome"
         value={group && group.nome}
         handleCloseModalProps={() => setOpenModal(false)}
         handleSubmitProps={handleSubmitEdit}

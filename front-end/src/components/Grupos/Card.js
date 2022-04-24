@@ -87,6 +87,7 @@ export default function CardLuis(props) {
       >
         <CardContent className={classes.texto} sx={{ flex: "1 0 auto" }}>
           <Typography
+            id="nome-grupo"
             component="div"
             variant="subtitle1"
             color="text.secondary"
@@ -101,6 +102,7 @@ export default function CardLuis(props) {
       <Grid Grid container direction="column" alignItems="center" item md={1}>
         <CardContent>
           <Button
+            id="acessar"
             className={classes.button1}
             variant="contained"
             onClick={handleClickAcessar}
@@ -108,6 +110,7 @@ export default function CardLuis(props) {
             Acessar
           </Button>
           <Button
+            id="editar"
             className={classes.button2}
             variant="contained"
             onClick={handleClickEditar}
@@ -115,6 +118,7 @@ export default function CardLuis(props) {
             Editar
           </Button>
           <Button
+            id="excluir"
             className={classes.button3}
             variant="contained"
             onClick={handleClickDeletar}
