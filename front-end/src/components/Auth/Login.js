@@ -1,6 +1,15 @@
-import React from "react";
+import React, { useState } from "react";
 import { makeStyles } from "@material-ui/styles";
-import { Grid, Typography, TextField, Paper, Button } from "@mui/material";
+import { useNavigate } from "react-router-dom";
+import {
+  Grid,
+  Typography,
+  TextField,
+  Paper,
+  Button,
+  Alert,
+  Snackbar,
+} from "@mui/material";
 import { useFormik } from "formik";
 import * as yup from "yup";
 import { login } from "../../services/api/Auth";
@@ -37,9 +46,14 @@ const useStyles = makeStyles({
 
 const Login = (props) => {
   const classes = useStyles(props);
-  // const handleSubmit = (values) => {
-  //   console.log(values);
-  // };
+  const navigate = useNavigate();
+  const [open, setOpen] = useState(false);
+  const [message, setMessage] = useState("");
+  const [type, setType] = useState("success");
+
+  const handleClose = () => {
+    setOpen(false);
+  };
 
   const validationLogin = yup.object({
     email: yup
@@ -84,6 +98,17 @@ const Login = (props) => {
       alignItems="center"
       className={classes.root}
     >
+      <Snackbar
+        anchorOrigin={{ vertical: "top", horizontal: "right" }}
+        key={"top" + "right"}
+        open={open}
+        autoHideDuration={6000}
+        onClose={handleClose}
+      >
+        <Alert onClose={handleClose} variant="filled" severity={type}>
+          {message}
+        </Alert>
+      </Snackbar>
       <Grid item md={3}>
         <img src={logo} />
       </Grid>

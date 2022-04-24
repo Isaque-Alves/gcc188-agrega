@@ -1,0 +1,31 @@
+{
+  "name": "agrega",
+  "version": "1.0.0",
+  "scripts": {
+    "start": "dotenv-run-script concurrently --kill-others \"npm run --prefix back-end start\" \"npm run --prefix front-end start\"",
+    "mocha": "mocha",
+    "concurrently": "concurrently",
+    "test": "cross-env TEST_MODE=Y npm run mocha -- tests/"
+  },
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/Isaque-Alves/gcc188-agrega.git"
+  },
+  "bugs": {
+    "url": "https://github.com/Isaque-Alves/gcc188-agrega/issues"
+  },
+  "homepage": "https://github.com/Isaque-Alves/gcc188-agrega#readme",
+  "dependencies": {
+    "back-end": "file:back-end",
+    "concurrently": "^7.1.0",
+    "dotenv": "^16.0.0",
+    "dotenv-run-script": "^0.2.0",
+    "front-end": "file:front-end"
+  },
+  "devDependencies": {
+    "chai": "^4.3.6",
+    "cross-env": "^7.0.3",
+    "mocha": "^9.2.2",
+    "puppeteer": "^13.6.0"
+  }
+}
