@@ -31,7 +31,7 @@ import {
 import { useNavigate, useParams } from "react-router-dom";
 
 const columns = [
-  { id: "name", label: "Name", minWidth: 170 },
+  { id: "nome", label: "Nome", minWidth: 170 },
   { id: "data", label: "Data", minWidth: 170 },
   { id: "acoes", label: "Ações", minWidth: 170 },
 ];
@@ -169,6 +169,7 @@ export default function Grupos(props) {
     return (
       <Grid>
         <Button
+          id="acessar"
           className={classes.button1}
           variant="contained"
           onClick={(e) => {
@@ -179,6 +180,7 @@ export default function Grupos(props) {
           Acessar
         </Button>
         <Button
+          id="editar"
           className={classes.button2}
           variant="contained"
           onClick={(e) => {
@@ -189,6 +191,7 @@ export default function Grupos(props) {
           Editar
         </Button>
         <Button
+          id="excluir"
           className={classes.button3}
           variant="contained"
           onClick={(e) => {
@@ -205,7 +208,7 @@ export default function Grupos(props) {
   const formatData = (rows) => {
     const data = rows.map((row) => {
       return {
-        name: row.nome,
+        nome: row.nome,
         data: new Date(row.updatedAt).toLocaleDateString(),
         gid: row.gid,
         lid: row.lid,
@@ -424,9 +427,10 @@ export default function Grupos(props) {
                         >
                           {columns.map((column) => {
                             const value = row[column.id];
-                            console.log(row);
+                            console.log(row, column);
                             return (
                               <TableCell
+                                id={column.id}
                                 className={classes.tabelaItens}
                                 key={column.id}
                                 align={column.align}

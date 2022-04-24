@@ -63,7 +63,7 @@ export default function CardComentario(props) {
             {comentario.Usuario && comentario.Usuario.nome}
           </Typography>
           <Grid container>
-            <Typography className={classes.comentarioText}>
+            <Typography id="texto" className={classes.comentarioText}>
               {comentario.texto}
             </Typography>
           </Grid>
@@ -75,8 +75,9 @@ export default function CardComentario(props) {
         justifyContent="flex-end"
         className={classes.buttons}
       >
-        {comentario.Usuario && comentario.Usuario.id == user.id ? (
+        {comentario.Usuario && comentario.Usuario.id === user.id ? (
           <Button
+            id="editar"
             variant="contained"
             className={classes.buttonEdit}
             onClick={handleEditComentario}
@@ -85,6 +86,7 @@ export default function CardComentario(props) {
           </Button>
         ) : null}
         <Button
+          id="excluir"
           variant="contained"
           className={classes.buttonExcluir}
           onClick={handleDeleteComentario}
