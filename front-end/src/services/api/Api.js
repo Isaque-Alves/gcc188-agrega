@@ -1,6 +1,6 @@
 import axios from "axios";
 import { GetCookie } from "../../utils/CookieUtil";
-const backUrl = "http://localhost:3001";
+const backUrl = process.env.REACT_APP_URL_BACKEND;
 
 const Api = () => {
   return axios.create({

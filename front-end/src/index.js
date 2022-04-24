@@ -15,7 +15,7 @@ import User from "./views/User";
 import UsersAdmin from "./views/UsersAdmin";
 
 ReactDOM.render(
-  <BrowserRouter>
+  <BrowserRouter basename={process.env.REACT_APP_BASE_URL_FRONTEND}>
     <Routes>
       <Route path="/" element={<App />} />
       <Route path="login" element={<Login />} />
